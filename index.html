@@ -1,0 +1,2329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>QAU File Sharing System - Documentation & Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.8/index.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/plus-jakarta-sans@5.0.3/index.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+h1, h2, h3, h4, h5 { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+:root {
+    --qau-green: #006A4E;
+    --qau-green-dark: #004D38;
+    --qau-gold: #C9A227;
+    --qau-gold-light: #E8C547;
+    --qau-blue: #1E40AF;
+    --qau-blue-light: #3B82F6;
+    --qau-cream: #FAF8F0;
+    --qau-dark: #1A2E1A;
+}
+
+.gradient-bg { background: linear-gradient(135deg, #006A4E 0%, #004D38 40%, #1E40AF 100%); }
+.gradient-bg-green { background: linear-gradient(135deg, #006A4E 0%, #004D38 100%); }
+.gradient-bg-blue { background: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%); }
+.gradient-bg-gold { background: linear-gradient(135deg, #C9A227 0%, #E8C547 100%); }
+
+.glass {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Sidebar - Mobile first approach */
+#sidebar {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile: sidebar hidden by default, slides in from left */
+@media (max-width: 1023px) {
+    #sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        z-index: 60;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+    }
+    #sidebar.open {
+        transform: translateX(0);
+    }
+    #mainContentArea {
+        margin-left: 0 !important;
+    }
+    #sidebarOverlay {
+        display: none;
+    }
+    #sidebarOverlay.active {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 55;
+        backdrop-filter: blur(2px);
+    }
+}
+
+/* Desktop: sidebar always visible */
+@media (min-width: 1024px) {
+    #sidebar {
+        transform: translateX(0) !important;
+    }
+    #sidebarOverlay {
+        display: none !important;
+    }
+}
+
+.sidebar-item {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 3px solid transparent;
+    min-height: 44px; /* Touch-friendly */
+}
+.sidebar-item:hover {
+    background: rgba(0, 106, 78, 0.08);
+    border-left-color: #C9A227;
+}
+.sidebar-item.active {
+    background: linear-gradient(90deg, rgba(0, 106, 78, 0.12), rgba(30, 64, 175, 0.04));
+    border-left-color: #006A4E;
+    color: #006A4E;
+    font-weight: 600;
+}
+
+.card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+@media (min-width: 768px) {
+    .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 106, 78, 0.15);
+    }
+}
+
+.upload-zone {
+    border: 2px dashed #006A4E;
+    transition: all 0.3s ease;
+}
+.upload-zone:hover, .upload-zone.dragover {
+    background: rgba(0, 106, 78, 0.04);
+    border-color: #C9A227;
+}
+
+.fade-in { animation: fadeIn 0.5s ease-out; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.pulse-dot { animation: pulse 2s infinite; }
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.progress-bar { transition: width 1s ease-in-out; }
+
+.file-row:hover { background: rgba(0, 106, 78, 0.03); }
+
+.notification-badge { animation: bounce 1s infinite; }
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+.scrollbar-thin::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { background: #006A4E; border-radius: 3px; }
+
+.doc-section {
+    border-left: 4px solid #006A4E;
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+}
+@media (min-width: 640px) {
+    .doc-section { padding-left: 1.5rem; margin-bottom: 2rem; }
+}
+
+.tech-badge {
+    background: linear-gradient(135deg, #006A4E, #004D38);
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+}
+@media (min-width: 640px) {
+    .tech-badge { padding: 0.5rem 1rem; font-size: 0.875rem; }
+}
+
+.tech-badge-blue {
+    background: linear-gradient(135deg, #1E40AF, #1E3A8A);
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-block;
+}
+@media (min-width: 640px) {
+    .tech-badge-blue { padding: 0.5rem 1rem; font-size: 0.875rem; }
+}
+
+.tech-badge-gold {
+    background: linear-gradient(135deg, #C9A227, #E8C547);
+    color: #1A2E1A;
+    padding: 0.35rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+}
+@media (min-width: 640px) {
+    .tech-badge-gold { padding: 0.5rem 1rem; font-size: 0.875rem; }
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -1.5rem;
+    top: 0.5rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #006A4E;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px #006A4E;
+}
+
+.wireframe-box {
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    background: #fafafa;
+}
+@media (min-width: 640px) {
+    .wireframe-box { padding: 1.5rem; }
+}
+.wireframe-header {
+    background: linear-gradient(90deg, #006A4E, #1E40AF);
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    margin: -1rem -1rem 1rem -1rem;
+    font-size: 0.875rem;
+}
+@media (min-width: 640px) {
+    .wireframe-header { padding: 0.75rem 1.5rem; margin: -1.5rem -1.5rem 1rem -1.5rem; }
+}
+
+.role-chip-admin { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.role-chip-faculty { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+.role-chip-student { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+
+.winner-badge {
+    background: linear-gradient(135deg, #C9A227, #E8C547);
+    color: #1A2E1A;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+@media (min-width: 640px) {
+    .winner-badge { font-size: 0.7rem; }
+}
+
+.compare-card {
+    position: relative;
+    overflow: hidden;
+}
+.compare-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #006A4E, #C9A227, #1E40AF);
+}
+
+.color-swatch {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+@media (min-width: 640px) {
+    .color-swatch { width: 80px; height: 80px; border-radius: 12px; }
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #006A4E, #004D38);
+    color: white;
+    transition: all 0.3s;
+    min-height: 44px; /* Touch-friendly */
+}
+.btn-primary:hover {
+    opacity: 0.9;
+    box-shadow: 0 10px 20px rgba(0, 106, 78, 0.2);
+}
+
+/* Mobile table responsive */
+.mobile-stack-table {
+    display: block;
+}
+@media (min-width: 768px) {
+    .mobile-stack-table {
+        display: table;
+    }
+}
+.mobile-stack-row {
+    display: block;
+    padding: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+@media (min-width: 768px) {
+    .mobile-stack-row {
+        display: table-row;
+        padding: 0;
+    }
+}
+.mobile-stack-cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem 0;
+    font-size: 0.875rem;
+}
+@media (min-width: 768px) {
+    .mobile-stack-cell {
+        display: table-cell;
+        padding: 1rem 1.25rem;
+    }
+}
+.mobile-stack-cell::before {
+    content: attr(data-label);
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-right: 0.5rem;
+}
+@media (min-width: 768px) {
+    .mobile-stack-cell::before {
+        content: none;
+    }
+}
+
+/* Hamburger animation */
+.hamburger-line {
+    transition: all 0.3s ease;
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #374151;
+    border-radius: 2px;
+}
+
+/* Toast responsive */
+#toast {
+    max-width: calc(100vw - 2rem);
+    left: 1rem;
+    right: 1rem;
+}
+@media (min-width: 640px) {
+    #toast {
+        left: auto;
+        right: 1.5rem;
+        max-width: 400px;
+    }
+}
+
+/* Prevent horizontal scroll on body */
+html, body { overflow-x: hidden; }
+
+/* Touch-friendly inputs */
+input[type="text"], input[type="password"], input[type="email"], 
+textarea, select {
+    font-size: 16px !important; /* Prevents iOS zoom */
+    min-height: 44px;
+}
+
+/* Landing page responsive */
+.landing-title {
+    font-size: 2rem;
+    line-height: 1.1;
+}
+@media (min-width: 640px) {
+    .landing-title { font-size: 3rem; }
+}
+@media (min-width: 1024px) {
+    .landing-title { font-size: 3.5rem; }
+}
+
+/* Doc nav horizontal scroll */
+.doc-nav-scroll {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.doc-nav-scroll::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- ============ LANDING PAGE ============ -->
+<div id="landing" class="min-h-screen gradient-bg flex items-center justify-center p-4 sm:p-6 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+    
+    <div class="max-w-4xl w-full text-center fade-in relative z-10 py-8">
+        <div class="mb-6 sm:mb-8">
+            <div class="w-20 h-20 sm:w-28 sm:h-28 mx-auto bg-white rounded-2xl flex items-center justify-center shadow-2xl mb-4 sm:mb-6 border-4 border-[#C9A227]">
+                <span class="text-3xl sm:text-4xl font-black text-[#006A4E]">QAU</span>
+            </div>
+            <div class="inline-block px-3 sm:px-4 py-1 bg-[#C9A227] text-[#1A2E1A] rounded-full text-[10px] sm:text-xs font-bold tracking-widest mb-3 sm:mb-4">QUAID-E-AZAM UNIVERSITY • ISLAMABAD</div>
+            <h1 class="landing-title font-bold text-white mb-3 sm:mb-4 tracking-tight">File Sharing & Tracking System</h1>
+            <h2 class="text-lg sm:text-2xl text-green-100 mb-2">Secure • Trackable • Role-Based Access</h2>
+            <p class="text-sm sm:text-lg text-green-200/80">Complete Project Documentation & Working Portal</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-8 sm:mt-12 px-2">
+            <button onclick="showDocument()" class="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-white text-[#006A4E] rounded-xl font-semibold text-base sm:text-lg hover:bg-[#FAF8F0] transition-all shadow-xl hover:shadow-2xl">
+                📄 View Documentation
+            </button>
+            <button onclick="showPortal()" class="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 gradient-bg-gold text-[#1A2E1A] rounded-xl font-bold text-base sm:text-lg hover:shadow-2xl transition-all shadow-xl">
+                🚀 Open Portal
+            </button>
+        </div>
+        <div class="mt-8 sm:mt-12 glass rounded-2xl p-4 sm:p-6 text-left text-green-100 mx-2">
+            <h3 class="text-white font-semibold text-base sm:text-lg mb-3">📋 Quick Overview</h3>
+            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm">
+                <li>✅ Auto role detection on login</li>
+                <li>✅ Django + Next.js tech stack</li>
+                <li>✅ Complete file tracking</li>
+                <li>✅ Strict student limitations</li>
+                <li>✅ QAU branding (Green, Gold, Blue)</li>
+                <li>✅ Real-time analytics dashboard</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ============ DOCUMENTATION PAGE ============ -->
+<div id="documentation" class="hidden min-h-screen bg-white">
+    <header class="gradient-bg text-white py-6 sm:py-8 px-4 shadow-xl relative overflow-hidden">
+        <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-xl flex items-center justify-center border-2 border-[#C9A227] flex-shrink-0">
+                    <span class="text-xl sm:text-2xl font-black text-[#006A4E]">QAU</span>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <div class="text-[10px] sm:text-xs text-[#C9A227] font-semibold tracking-wider">QUAID-E-AZAM UNIVERSITY</div>
+                    <h1 class="text-xl sm:text-3xl font-bold truncate">Project Documentation</h1>
+                    <p class="text-green-200 text-xs sm:text-sm">File Sharing & Tracking System — v3.0</p>
+                </div>
+            </div>
+            <button onclick="showLanding()" class="mt-2 px-4 py-2 bg-white/15 hover:bg-white/25 rounded-lg transition text-sm">← Back to Home</button>
+        </div>
+    </header>
+
+    <nav class="sticky top-0 z-50 bg-white shadow-md border-b">
+        <div class="max-w-6xl mx-auto px-2 sm:px-4">
+            <div class="flex gap-1 overflow-x-auto py-2 doc-nav-scroll">
+                <button onclick="scrollToSection('overview')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#006A4E] hover:bg-green-50 rounded-lg whitespace-nowrap">Overview</button>
+                <button onclick="scrollToSection('objectives')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#006A4E] hover:bg-green-50 rounded-lg whitespace-nowrap">Objectives</button>
+                <button onclick="scrollToSection('roles')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#006A4E] hover:bg-green-50 rounded-lg whitespace-nowrap">🔐 Roles</button>
+                <button onclick="scrollToSection('features')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#006A4E] hover:bg-green-50 rounded-lg whitespace-nowrap">Features</button>
+                <button onclick="scrollToSection('tech')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#006A4E] hover:bg-green-50 rounded-lg whitespace-nowrap">⚡ Tech</button>
+                <button onclick="scrollToSection('uiux')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#006A4E] hover:bg-green-50 rounded-lg whitespace-nowrap">🎨 UI/UX</button>
+                <button onclick="scrollToSection('database')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#006A4E] hover:bg-green-50 rounded-lg whitespace-nowrap">Database</button>
+                <button onclick="scrollToSection('architecture')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#006A4E] hover:bg-green-50 rounded-lg whitespace-nowrap">Architecture</button>
+                <button onclick="scrollToSection('security')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#006A4E] hover:bg-green-50 rounded-lg whitespace-nowrap">Security</button>
+                <button onclick="scrollToSection('timeline')" class="px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium text-gray-600 hover:text-[#006A4E] hover:bg-green-50 rounded-lg whitespace-nowrap">Timeline</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-12">
+        
+        <!-- 1. Overview -->
+        <section id="overview" class="mb-10 sm:mb-16 fade-in">
+            <h2 class="text-xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 gradient-bg-green text-white rounded-lg flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">1</span>
+                <span>Project Overview</span>
+            </h2>
+            <div class="doc-section">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">Project Title</h3>
+                <p class="text-gray-700 text-base sm:text-lg font-medium">QAU File Sharing & Tracking System (QAU-FSTS)</p>
+            </div>
+            <div class="doc-section">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">Introduction</h3>
+                <p class="text-gray-600 leading-relaxed text-sm sm:text-base">
+                    A centralized, secure web portal for Quaid-e-Azam University enabling file sharing with complete tracking — who uploaded, where shared, and who downloaded with exact timestamps. The system <strong>auto-detects user roles</strong> from credentials (email/registration number), enforcing strict access boundaries for Admins, Faculty, and Students.
+                </p>
+            </div>
+            <div class="doc-section">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">Problem Statement</h3>
+                <div class="bg-red-50 border border-red-200 rounded-xl p-4 sm:p-6">
+                    <ul class="space-y-2 text-gray-700 text-sm sm:text-base">
+                        <li class="flex items-start gap-2"><span class="text-red-500 mt-1">●</span> No centralized file sharing — files circulate via WhatsApp, email, USB</li>
+                        <li class="flex items-start gap-2"><span class="text-red-500 mt-1">●</span> Zero visibility into who accessed sensitive academic documents</li>
+                        <li class="flex items-start gap-2"><span class="text-red-500 mt-1">●</span> Students have unrestricted access (security risk)</li>
+                        <li class="flex items-start gap-2"><span class="text-red-500 mt-1">●</span> No audit trail for compliance or accountability</li>
+                        <li class="flex items-start gap-2"><span class="text-red-500 mt-1">●</span> Version control chaos across departments</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="doc-section">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">Solution</h3>
+                <div class="bg-green-50 border border-green-200 rounded-xl p-4 sm:p-6">
+                    <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+                        A unified web portal providing: centralized file storage, auto-detected role-based access control, real-time download tracking, immutable activity logs, department-wise file organization, and a modern QAU-branded interface (Green, Gold, Blue) requiring zero training.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Objectives -->
+        <section id="objectives" class="mb-10 sm:mb-16 fade-in">
+            <h2 class="text-xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 gradient-bg-green text-white rounded-lg flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">2</span>
+                <span>Project Objectives</span>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 sm:p-6 border border-green-100">
+                    <h4 class="font-semibold text-[#006A4E] mb-3 text-sm sm:text-base">🎯 Primary Objectives</h4>
+                    <ul class="space-y-2 text-gray-700 text-xs sm:text-sm">
+                        <li>• Enable seamless file sharing across all QAU departments</li>
+                        <li>• Track every file download with user identity & timestamp</li>
+                        <li>• Auto-detect roles from credentials (no manual selection)</li>
+                        <li>• Strict role-based access control (students limited to read-only)</li>
+                        <li>• Maintain complete audit trail of all file activities</li>
+                        <li>• Ensure data security and privacy compliance</li>
+                    </ul>
+                </div>
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 sm:p-6 border border-blue-100">
+                    <h4 class="font-semibold text-[#1E40AF] mb-3 text-sm sm:text-base">📊 Secondary Objectives</h4>
+                    <ul class="space-y-2 text-gray-700 text-xs sm:text-sm">
+                        <li>• Analytics dashboard for file usage statistics</li>
+                        <li>• Department-wise file organization & categorization</li>
+                        <li>• File version management</li>
+                        <li>• Search & filter capabilities</li>
+                        <li>• Mobile-responsive QAU-branded design</li>
+                        <li>• Notification system for file activities</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Roles & Access -->
+        <section id="roles" class="mb-10 sm:mb-16 fade-in">
+            <h2 class="text-xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 gradient-bg-blue text-white rounded-lg flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">3</span>
+                <span>Auto Role Detection & Access Control</span>
+            </h2>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-5 mb-4 sm:mb-6">
+                <h4 class="font-semibold text-[#1E40AF] mb-2 text-sm sm:text-base">🔐 Auto Role Detection Logic</h4>
+                <p class="text-xs sm:text-sm text-gray-700 mb-3">Users enter only email or registration number. The system detects the role automatically:</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
+                    <div class="bg-white rounded-lg p-3 border border-red-100">
+                        <p class="font-semibold text-red-700 mb-1">👑 Admin</p>
+                        <p class="text-xs text-gray-600">Email starts with <code class="bg-gray-100 px-1 rounded">admin@</code>, <code class="bg-gray-100 px-1 rounded">hod@</code>, <code class="bg-gray-100 px-1 rounded">director@</code></p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 border border-blue-100">
+                        <p class="font-semibold text-[#1E40AF] mb-1">👨‍🏫 Faculty</p>
+                        <p class="text-xs text-gray-600">Email contains <code class="bg-gray-100 px-1 rounded">@qau.edu.pk</code> with <code class="bg-gray-100 px-1 rounded">dr.</code> or <code class="bg-gray-100 px-1 rounded">prof.</code></p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 border border-green-100">
+                        <p class="font-semibold text-green-700 mb-1">🎓 Student</p>
+                        <p class="text-xs text-gray-600">Registration number: <code class="bg-gray-100 px-1 rounded">2024-CS-156</code>, <code class="bg-gray-100 px-1 rounded">fa24-xxx</code></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+                <div class="bg-white rounded-xl border-2 border-red-100 p-4 sm:p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="role-chip-admin px-2 py-1 rounded-full text-xs font-bold">ADMIN</span>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">Full System Control</h4>
+                    <ul class="space-y-1.5 text-xs text-gray-600">
+                        <li>✅ Upload unlimited files</li>
+                        <li>✅ Share with anyone</li>
+                        <li>✅ Delete any file</li>
+                        <li>✅ View ALL analytics</li>
+                        <li>✅ Manage all users</li>
+                        <li>✅ View complete audit logs</li>
+                        <li>✅ System configuration</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl border-2 border-blue-100 p-4 sm:p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="role-chip-faculty px-2 py-1 rounded-full text-xs font-bold">FACULTY</span>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">Department Level Access</h4>
+                    <ul class="space-y-1.5 text-xs text-gray-600">
+                        <li>✅ Upload files (500MB limit)</li>
+                        <li>✅ Share with students/departments</li>
+                        <li>✅ Delete own files only</li>
+                        <li>✅ View department analytics</li>
+                        <li>✅ Track downloads on own files</li>
+                        <li>❌ Cannot manage users</li>
+                        <li>❌ Cannot access system settings</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl border-2 border-green-100 p-4 sm:p-5">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="role-chip-student px-2 py-1 rounded-full text-xs font-bold">STUDENT</span>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">Limited Read-Only Access</h4>
+                    <ul class="space-y-1.5 text-xs text-gray-600">
+                        <li>✅ View files shared with them</li>
+                        <li>✅ Download permitted files</li>
+                        <li>✅ View own download history</li>
+                        <li>✅ Receive notifications</li>
+                        <li>❌ <strong class="text-red-600">Cannot upload files</strong></li>
+                        <li>❌ <strong class="text-red-600">Cannot share files</strong></li>
+                        <li>❌ <strong class="text-red-600">Cannot see analytics</strong></li>
+                        <li>❌ <strong class="text-red-600">Cannot access admin logs</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-4 sm:mt-6 bg-red-50 border-l-4 border-red-500 rounded-r-xl p-4 sm:p-5">
+                <h4 class="font-bold text-red-800 mb-2 text-sm sm:text-base">⚠️ Critical Security Note on Student Access</h4>
+                <p class="text-xs sm:text-sm text-red-700">Students are strictly limited to <strong>Read/Download</strong> operations. Allowing students to upload or share files introduces severe risks: malware injection, exam paper leaks, and unauthorized distribution. These limitations are enforced at the <strong>database and API middleware level</strong>, not just the UI, making bypass impossible.</p>
+            </div>
+        </section>
+
+        <!-- 4. Features -->
+        <section id="features" class="mb-10 sm:mb-16 fade-in">
+            <h2 class="text-xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 gradient-bg-green text-white rounded-lg flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">4</span>
+                <span>Detailed Features</span>
+            </h2>
+            <div class="space-y-4 sm:space-y-6">
+                <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 card-hover">
+                    <h4 class="text-base sm:text-lg font-semibold text-gray-800 mb-3">📤 File Upload & Management</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm text-gray-600">
+                        <div>
+                            <p class="font-medium text-gray-700 mb-1">Upload Features:</p>
+                            <ul class="space-y-1">
+                                <li>• Drag & drop file upload</li>
+                                <li>• Multi-file simultaneous upload</li>
+                                <li>• File size limit: 500MB per file</li>
+                                <li>• Supported: PDF, DOC/DOCX, XLS/XLSX, PPT, JPG, PNG, ZIP</li>
+                                <li>• Upload progress indicator</li>
+                                <li>• Magic byte file type validation</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-700 mb-1">Management Features:</p>
+                            <ul class="space-y-1">
+                                <li>• Folder-based organization</li>
+                                <li>• File tagging & categorization</li>
+                                <li>• File description & metadata</li>
+                                <li>• Version history tracking</li>
+                                <li>• File preview before download</li>
+                                <li>• Bulk operations (delete, move, share)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 card-hover">
+                    <h4 class="text-base sm:text-lg font-semibold text-gray-800 mb-3">📊 Tracking & Analytics</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs sm:text-sm text-gray-600">
+                        <div>
+                            <p class="font-medium text-gray-700 mb-1">Download Tracking:</p>
+                            <ul class="space-y-1">
+                                <li>• Who downloaded (user name & ID)</li>
+                                <li>• When downloaded (exact timestamp)</li>
+                                <li>• From where (department/IP)</li>
+                                <li>• Download count per file</li>
+                                <li>• Device information</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-700 mb-1">Analytics Dashboard:</p>
+                            <ul class="space-y-1">
+                                <li>• Total files uploaded/downloaded</li>
+                                <li>• Most downloaded files</li>
+                                <li>• Active users chart</li>
+                                <li>• Department-wise statistics</li>
+                                <li>• Storage usage analytics</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-700 mb-1">Activity Logs:</p>
+                            <ul class="space-y-1">
+                                <li>• Complete audit trail</li>
+                                <li>• Filterable by date/user/file</li>
+                                <li>• Exportable reports (CSV/PDF)</li>
+                                <li>• Real-time notifications</li>
+                                <li>• Suspicious activity alerts</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 card-hover">
+                    <h4 class="text-base sm:text-lg font-semibold text-gray-800 mb-3">🔍 Search, Notifications & Sharing</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm text-gray-600">
+                        <ul class="space-y-1">
+                            <li>• Full-text search across file names & descriptions</li>
+                            <li>• Filter by department, type, date, size</li>
+                            <li>• Sort by name, date, size, downloads</li>
+                            <li>• Recent files quick access</li>
+                            <li>• Starred/bookmarked files</li>
+                        </ul>
+                        <ul class="space-y-1">
+                            <li>• Email notifications for shared files</li>
+                            <li>• In-app notifications</li>
+                            <li>• Download completion alerts</li>
+                            <li>• Share with specific users or departments</li>
+                            <li>• Time-limited sharing links</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Tech Stack -->
+        <section id="tech" class="mb-10 sm:mb-16 fade-in">
+            <h2 class="text-xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 gradient-bg-gold text-[#1A2E1A] rounded-lg flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">5</span>
+                <span>Final Technology Stack</span>
+            </h2>
+
+            <div class="bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-[#C9A227] rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6">
+                <h3 class="text-lg sm:text-xl font-bold text-[#1A2E1A] mb-2">🏆 Recommended: Django + Next.js</h3>
+                <p class="text-gray-700 text-xs sm:text-sm">Hybrid approach — Django for robust backend security + Next.js for lightning-fast, modern frontend.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <div class="bg-white rounded-xl border-2 border-green-200 p-4 sm:p-6 compare-card">
+                    <div class="flex items-center justify-between mb-3 sm:mb-4 flex-wrap gap-2">
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-900 rounded-lg flex items-center justify-center text-white font-bold flex-shrink-0">Py</div>
+                            <div>
+                                <h4 class="font-bold text-sm sm:text-lg text-gray-800">Python Django 5</h4>
+                                <p class="text-xs text-gray-500">Backend Framework</p>
+                            </div>
+                        </div>
+                        <span class="winner-badge">✓ Best Backend</span>
+                    </div>
+                    <div class="space-y-2 text-xs sm:text-sm">
+                        <div class="flex items-center gap-2 flex-wrap"><span class="tech-badge">Django 5.x</span><span class="text-gray-600 text-xs">Web Framework</span></div>
+                        <div class="flex items-center gap-2 flex-wrap"><span class="tech-badge">DRF</span><span class="text-gray-600 text-xs">REST API</span></div>
+                        <div class="flex items-center gap-2 flex-wrap"><span class="tech-badge">PostgreSQL</span><span class="text-gray-600 text-xs">Database</span></div>
+                        <div class="flex items-center gap-2 flex-wrap"><span class="tech-badge">Celery + Redis</span><span class="text-gray-600 text-xs">Background Tasks</span></div>
+                        <div class="flex items-center gap-2 flex-wrap"><span class="tech-badge">Django Channels</span><span class="text-gray-600 text-xs">WebSockets</span></div>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-3 mt-3 sm:mt-4 text-xs">
+                        <p class="font-semibold text-green-800">Why Django?</p>
+                        <p class="text-gray-600 mt-1">Built-in Admin panel, native CSRF/XSS/SQLi protection, robust ORM, and battle-tested auth system.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border-2 border-blue-200 p-4 sm:p-6 compare-card">
+                    <div class="flex items-center justify-between mb-3 sm:mb-4 flex-wrap gap-2">
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-black rounded-lg flex items-center justify-center text-white font-bold flex-shrink-0">N</div>
+                            <div>
+                                <h4 class="font-bold text-sm sm:text-lg text-gray-800">Next.js 14</h4>
+                                <p class="text-xs text-gray-500">Frontend Framework</p>
+                            </div>
+                        </div>
+                        <span class="winner-badge">✓ Best Frontend</span>
+                    </div>
+                    <div class="space-y-2 text-xs sm:text-sm">
+                        <div class="flex items-center gap-2 flex-wrap"><span class="tech-badge-blue">Next.js 14</span><span class="text-gray-600 text-xs">React Framework</span></div>
+                        <div class="flex items-center gap-2 flex-wrap"><span class="tech-badge-blue">TypeScript</span><span class="text-gray-600 text-xs">Type Safety</span></div>
+                        <div class="flex items-center gap-2 flex-wrap"><span class="tech-badge-blue">Tailwind CSS</span><span class="text-gray-600 text-xs">Styling</span></div>
+                        <div class="flex items-center gap-2 flex-wrap"><span class="tech-badge-blue">Shadcn UI</span><span class="text-gray-600 text-xs">Components</span></div>
+                        <div class="flex items-center gap-2 flex-wrap"><span class="tech-badge-blue">TanStack Query</span><span class="text-gray-600 text-xs">Data Fetching</span></div>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-3 mt-3 sm:mt-4 text-xs">
+                        <p class="font-semibold text-[#1E40AF]">Why Next.js?</p>
+                        <p class="text-gray-600 mt-1">Blazing-fast SSR, automatic image optimization, Server Actions for secure file uploads.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 sm:p-6 border border-purple-100">
+                    <h4 class="font-semibold text-purple-800 mb-3 sm:mb-4 text-sm sm:text-lg">📦 Storage & Infrastructure</h4>
+                    <div class="space-y-2 sm:space-y-3">
+                        <div class="flex items-center gap-2 sm:gap-3 flex-wrap"><span class="tech-badge-gold">AWS S3</span><span class="text-xs sm:text-sm text-gray-600">File Storage</span></div>
+                        <div class="flex items-center gap-2 sm:gap-3 flex-wrap"><span class="tech-badge-gold">CloudFront</span><span class="text-xs sm:text-sm text-gray-600">CDN</span></div>
+                        <div class="flex items-center gap-2 sm:gap-3 flex-wrap"><span class="tech-badge-gold">Docker</span><span class="text-xs sm:text-sm text-gray-600">Containerization</span></div>
+                        <div class="flex items-center gap-2 sm:gap-3 flex-wrap"><span class="tech-badge-gold">Nginx</span><span class="text-xs sm:text-sm text-gray-600">Reverse Proxy</span></div>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-4 sm:p-6 border border-orange-100">
+                    <h4 class="font-semibold text-orange-800 mb-3 sm:mb-4 text-sm sm:text-lg">🛠️ Development Tools</h4>
+                    <div class="space-y-2 sm:space-y-3">
+                        <div class="flex items-center gap-2 sm:gap-3 flex-wrap"><span class="tech-badge">Git & GitHub</span><span class="text-xs sm:text-sm text-gray-600">Version Control</span></div>
+                        <div class="flex items-center gap-2 sm:gap-3 flex-wrap"><span class="tech-badge">Pytest + Jest</span><span class="text-xs sm:text-sm text-gray-600">Testing</span></div>
+                        <div class="flex items-center gap-2 sm:gap-3 flex-wrap"><span class="tech-badge">ESLint + Black</span><span class="text-xs sm:text-sm text-gray-600">Code Quality</span></div>
+                        <div class="flex items-center gap-2 sm:gap-3 flex-wrap"><span class="tech-badge">GitHub Actions</span><span class="text-xs sm:text-sm text-gray-600">CI/CD Pipeline</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 sm:mt-8 bg-gray-50 rounded-xl p-4 sm:p-6 border">
+                <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">Why This Stack Wins for QAU?</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm text-gray-600">
+                    <div>
+                        <p class="font-medium text-[#006A4E] mb-1">🔒 Security Benefits:</p>
+                        <ul class="space-y-1">
+                            <li>• Django's built-in CSRF, XSS, SQLi protection</li>
+                            <li>• Auto-generated admin panel</li>
+                            <li>• Native RBAC with Groups & Permissions</li>
+                            <li>• Magic byte file validation</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="font-medium text-[#1E40AF] mb-1">⚡ Performance Benefits:</p>
+                        <ul class="space-y-1">
+                            <li>• Next.js SSR for instant page loads</li>
+                            <li>• Redis caching reduces DB load by 80%</li>
+                            <li>• CDN ensures fast file delivery globally</li>
+                            <li>• Celery for async file processing</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. UI/UX & Colors -->
+        <section id="uiux" class="mb-10 sm:mb-16 fade-in">
+            <h2 class="text-xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 gradient-bg-blue text-white rounded-lg flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">6</span>
+                <span>UI/UX Design & Color System</span>
+            </h2>
+
+            <div class="doc-section mb-6 sm:mb-8">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">Official QAU Color Palette</h3>
+                <p class="text-gray-600 text-xs sm:text-sm mb-4">Inspired by Quaid-e-Azam University's main website with Green, Gold, and Blue as core brand colors.</p>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4">
+                    <div class="text-center">
+                        <div class="color-swatch mx-auto mb-2" style="background-color: #006A4E;"></div>
+                        <p class="text-xs font-bold">QAU Green</p>
+                        <p class="text-[10px] text-gray-500 font-mono">#006A4E</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="color-swatch mx-auto mb-2" style="background-color: #004D38;"></div>
+                        <p class="text-xs font-bold">Dark Green</p>
+                        <p class="text-[10px] text-gray-500 font-mono">#004D38</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="color-swatch mx-auto mb-2" style="background-color: #C9A227;"></div>
+                        <p class="text-xs font-bold">QAU Gold</p>
+                        <p class="text-[10px] text-gray-500 font-mono">#C9A227</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="color-swatch mx-auto mb-2" style="background-color: #1E40AF;"></div>
+                        <p class="text-xs font-bold">QAU Blue</p>
+                        <p class="text-[10px] text-gray-500 font-mono">#1E40AF</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="color-swatch mx-auto mb-2" style="background-color: #FAF8F0; border: 1px solid #e5e7eb;"></div>
+                        <p class="text-xs font-bold">Cream</p>
+                        <p class="text-[10px] text-gray-500 font-mono">#FAF8F0</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="color-swatch mx-auto mb-2" style="background-color: #1A2E1A;"></div>
+                        <p class="text-xs font-bold">Dark Forest</p>
+                        <p class="text-[10px] text-gray-500 font-mono">#1A2E1A</p>
+                    </div>
+                </div>
+                <div class="mt-4 sm:mt-6 bg-blue-50 border border-blue-200 rounded-xl p-3 sm:p-4">
+                    <p class="text-xs sm:text-sm text-[#1E40AF]"><strong>💡 Color Usage Guide:</strong></p>
+                    <ul class="text-xs text-gray-700 mt-2 space-y-1">
+                        <li>• <strong class="text-[#006A4E]">Green</strong> — Primary actions, headers, success states, admin role</li>
+                        <li>• <strong class="text-[#C9A227]">Gold</strong> — Highlights, badges, premium features, accents</li>
+                        <li>• <strong class="text-[#1E40AF]">Blue</strong> — Secondary actions, faculty role, info states, links</li>
+                        <li>• <strong class="text-green-700">Light Green</strong> — Student role, shared files, positive indicators</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="doc-section mb-6 sm:mb-8">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3">Design Principles</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border text-center">
+                        <div class="text-2xl sm:text-3xl mb-2">🎯</div>
+                        <h5 class="font-semibold text-xs sm:text-sm">Simple & Intuitive</h5>
+                        <p class="text-[10px] sm:text-xs text-gray-500 mt-1">Zero learning curve</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border text-center">
+                        <div class="text-2xl sm:text-3xl mb-2">⚡</div>
+                        <h5 class="font-semibold text-xs sm:text-sm">Fast & Responsive</h5>
+                        <p class="text-[10px] sm:text-xs text-gray-500 mt-1">&lt; 2s load time</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border text-center">
+                        <div class="text-2xl sm:text-3xl mb-2">🎨</div>
+                        <h5 class="font-semibold text-xs sm:text-sm">QAU Branded</h5>
+                        <p class="text-[10px] sm:text-xs text-gray-500 mt-1">Green, Gold, Blue</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-3 sm:p-4 border text-center">
+                        <div class="text-2xl sm:text-3xl mb-2">📱</div>
+                        <h5 class="font-semibold text-xs sm:text-sm">Mobile First</h5>
+                        <p class="text-[10px] sm:text-xs text-gray-500 mt-1">All devices</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Database -->
+        <section id="database" class="mb-10 sm:mb-16 fade-in">
+            <h2 class="text-xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 gradient-bg-green text-white rounded-lg flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">7</span>
+                <span>Database Schema (Django Models)</span>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div class="bg-white rounded-xl border p-4 sm:p-5">
+                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2 text-sm sm:text-base">
+                        <span class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center text-xs flex-shrink-0">👤</span>
+                        <span>CustomUser Model</span>
+                    </h4>
+                    <div class="bg-gray-50 rounded-lg p-3 text-[11px] sm:text-xs font-mono space-y-1 overflow-x-auto">
+                        <div><span class="text-[#1E40AF]">id</span> <span class="text-gray-400">UUID PRIMARY KEY</span></div>
+                        <div><span class="text-[#1E40AF]">email</span> <span class="text-gray-400">VARCHAR UNIQUE</span></div>
+                        <div><span class="text-[#1E40AF]">registration_no</span> <span class="text-gray-400">VARCHAR UNIQUE</span></div>
+                        <div><span class="text-[#1E40AF]">full_name</span> <span class="text-gray-400">VARCHAR(100)</span></div>
+                        <div><span class="text-[#1E40AF]">role</span> <span class="text-gray-400">ENUM('admin','faculty','student')</span></div>
+                        <div><span class="text-[#1E40AF]">department</span> <span class="text-gray-400">FK → Department</span></div>
+                        <div><span class="text-[#1E40AF]">password_hash</span> <span class="text-gray-400">VARCHAR(255)</span></div>
+                        <div><span class="text-[#1E40AF]">is_active</span> <span class="text-gray-400">BOOLEAN</span></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl border p-4 sm:p-5">
+                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2 text-sm sm:text-base">
+                        <span class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-xs flex-shrink-0">📁</span>
+                        <span>File Model</span>
+                    </h4>
+                    <div class="bg-gray-50 rounded-lg p-3 text-[11px] sm:text-xs font-mono space-y-1 overflow-x-auto">
+                        <div><span class="text-[#1E40AF]">id</span> <span class="text-gray-400">UUID PRIMARY KEY</span></div>
+                        <div><span class="text-[#1E40AF]">name</span> <span class="text-gray-400">VARCHAR(255)</span></div>
+                        <div><span class="text-[#1E40AF]">file</span> <span class="text-gray-400">FileField (AWS S3)</span></div>
+                        <div><span class="text-[#1E40AF]">size_bytes</span> <span class="text-gray-400">BIGINT</span></div>
+                        <div><span class="text-[#1E40AF]">uploaded_by</span> <span class="text-gray-400">FK → CustomUser</span></div>
+                        <div><span class="text-[#1E40AF]">department</span> <span class="text-gray-400">FK → Department</span></div>
+                        <div><span class="text-[#1E40AF]">is_public</span> <span class="text-gray-400">BOOLEAN</span></div>
+                        <div><span class="text-[#1E40AF]">download_count</span> <span class="text-gray-400">INTEGER</span></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl border p-4 sm:p-5">
+                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2 text-sm sm:text-base">
+                        <span class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center text-xs flex-shrink-0">📥</span>
+                        <span>DownloadLog (Tracking)</span>
+                    </h4>
+                    <div class="bg-gray-50 rounded-lg p-3 text-[11px] sm:text-xs font-mono space-y-1 overflow-x-auto">
+                        <div><span class="text-[#1E40AF]">id</span> <span class="text-gray-400">UUID PRIMARY KEY</span></div>
+                        <div><span class="text-[#1E40AF]">file</span> <span class="text-gray-400">FK → File</span></div>
+                        <div><span class="text-[#1E40AF]">user</span> <span class="text-gray-400">FK → CustomUser</span></div>
+                        <div><span class="text-[#1E40AF]">downloaded_at</span> <span class="text-gray-400">TIMESTAMP</span></div>
+                        <div><span class="text-[#1E40AF]">ip_address</span> <span class="text-gray-400">VARCHAR(45)</span></div>
+                        <div><span class="text-[#1E40AF]">user_agent</span> <span class="text-gray-400">VARCHAR(500)</span></div>
+                        <div><span class="text-[#1E40AF]">device_type</span> <span class="text-gray-400">ENUM</span></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl border p-4 sm:p-5">
+                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center gap-2 text-sm sm:text-base">
+                        <span class="w-6 h-6 bg-yellow-100 rounded flex items-center justify-center text-xs flex-shrink-0">🔗</span>
+                        <span>FileShare Model</span>
+                    </h4>
+                    <div class="bg-gray-50 rounded-lg p-3 text-[11px] sm:text-xs font-mono space-y-1 overflow-x-auto">
+                        <div><span class="text-[#1E40AF]">id</span> <span class="text-gray-400">UUID PRIMARY KEY</span></div>
+                        <div><span class="text-[#1E40AF]">file</span> <span class="text-gray-400">FK → File</span></div>
+                        <div><span class="text-[#1E40AF]">shared_by</span> <span class="text-gray-400">FK → CustomUser</span></div>
+                        <div><span class="text-[#1E40AF]">shared_with_user</span> <span class="text-gray-400">FK → CustomUser</span></div>
+                        <div><span class="text-[#1E40AF]">shared_with_dept</span> <span class="text-gray-400">FK → Department</span></div>
+                        <div><span class="text-[#1E40AF]">permission</span> <span class="text-gray-400">ENUM('view','download')</span></div>
+                        <div><span class="text-[#1E40AF]">expires_at</span> <span class="text-gray-400">TIMESTAMP</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Architecture -->
+        <section id="architecture" class="mb-10 sm:mb-16 fade-in">
+            <h2 class="text-xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 gradient-bg-blue text-white rounded-lg flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">8</span>
+                <span>System Architecture</span>
+            </h2>
+            <div class="bg-white rounded-xl border p-4 sm:p-6 mb-4 sm:mb-6">
+                <h4 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">Architecture Diagram (Django + Next.js)</h4>
+                <div class="bg-gray-50 rounded-xl p-4 sm:p-8 overflow-x-auto">
+                    <div class="flex flex-col items-center gap-3 sm:gap-4 min-w-[300px]">
+                        <div class="w-full max-w-2xl bg-blue-50 border-2 border-blue-200 rounded-xl p-3 sm:p-4 text-center">
+                            <p class="text-[10px] sm:text-xs font-medium text-[#1E40AF] mb-2">CLIENT LAYER (Next.js 14)</p>
+                            <div class="flex justify-center gap-2 sm:gap-4 flex-wrap">
+                                <div class="bg-white rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">🌐 Web Browser</div>
+                                <div class="bg-white rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">📱 Mobile</div>
+                            </div>
+                        </div>
+                        <div class="text-xl sm:text-2xl">↓</div>
+                        <div class="w-full max-w-2xl bg-yellow-50 border-2 border-yellow-200 rounded-xl p-3 sm:p-4 text-center">
+                            <p class="text-[10px] sm:text-xs font-medium text-[#C9A227] mb-2">API GATEWAY (Nginx)</p>
+                            <div class="flex justify-center gap-2 sm:gap-4 flex-wrap">
+                                <div class="bg-white rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">Rate Limiting</div>
+                                <div class="bg-white rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">SSL</div>
+                                <div class="bg-white rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">Load Balancing</div>
+                            </div>
+                        </div>
+                        <div class="text-xl sm:text-2xl">↓</div>
+                        <div class="w-full max-w-2xl bg-green-50 border-2 border-green-200 rounded-xl p-3 sm:p-4 text-center">
+                            <p class="text-[10px] sm:text-xs font-medium text-[#006A4E] mb-2">APPLICATION LAYER (Python Django 5)</p>
+                            <div class="flex justify-center gap-2 flex-wrap">
+                                <div class="bg-white rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">🔐 Auth</div>
+                                <div class="bg-white rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">📁 File</div>
+                                <div class="bg-white rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">📊 Analytics</div>
+                                <div class="bg-white rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">🔔 Notify</div>
+                                <div class="bg-white rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">👥 User</div>
+                            </div>
+                        </div>
+                        <div class="text-xl sm:text-2xl">↓</div>
+                        <div class="w-full max-w-2xl bg-purple-50 border-2 border-purple-200 rounded-xl p-3 sm:p-4 text-center">
+                            <p class="text-[10px] sm:text-xs font-medium text-purple-700 mb-2">DATA LAYER</p>
+                            <div class="flex justify-center gap-2 sm:gap-4 flex-wrap">
+                                <div class="bg-white rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">🐘 PostgreSQL</div>
+                                <div class="bg-white rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">⚡ Redis</div>
+                                <div class="bg-white rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">📦 AWS S3</div>
+                                <div class="bg-white rounded-lg px-2 sm:px-4 py-1.5 sm:py-2 shadow text-[10px] sm:text-xs">🌍 CDN</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div class="bg-white rounded-xl border p-4 sm:p-5">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">🔄 REST API Endpoints (Django DRF)</h4>
+                    <div class="bg-gray-50 rounded-lg p-3 text-[10px] sm:text-xs font-mono space-y-1.5 overflow-x-auto">
+                        <div><span class="text-green-600">POST</span> /api/auth/login/</div>
+                        <div><span class="text-green-600">POST</span> /api/auth/register/</div>
+                        <div><span class="text-blue-600">GET</span> /api/files/</div>
+                        <div><span class="text-green-600">POST</span> /api/files/upload/</div>
+                        <div><span class="text-blue-600">GET</span> /api/files/{id}/</div>
+                        <div><span class="text-yellow-600">PUT</span> /api/files/{id}/</div>
+                        <div><span class="text-red-600">DELETE</span> /api/files/{id}/</div>
+                        <div><span class="text-blue-600">GET</span> /api/files/{id}/download/</div>
+                        <div><span class="text-green-600">POST</span> /api/files/{id}/share/</div>
+                        <div><span class="text-blue-600">GET</span> /api/analytics/dashboard/</div>
+                        <div><span class="text-blue-600">GET</span> /api/activity-logs/</div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl border p-4 sm:p-5">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">📡 Real-time Events (Django Channels)</h4>
+                    <div class="bg-gray-50 rounded-lg p-3 text-[10px] sm:text-xs font-mono space-y-1.5 overflow-x-auto">
+                        <div><span class="text-green-600">emit</span> file:uploaded → Department users</div>
+                        <div><span class="text-green-600">emit</span> file:shared → Specific user</div>
+                        <div><span class="text-green-600">emit</span> file:downloaded → File owner</div>
+                        <div><span class="text-green-600">emit</span> notification:new → Target user</div>
+                        <div><span class="text-green-600">emit</span> user:online → All connected</div>
+                        <div><span class="text-green-600">emit</span> storage:warning → Admin</div>
+                    </div>
+                    <div class="mt-3 sm:mt-4 bg-blue-50 rounded-lg p-3 text-[10px] sm:text-xs text-[#1E40AF]">
+                        <p class="font-medium">💡 Real-time Benefits:</p>
+                        <p class="mt-1">Users see new files instantly without refreshing. Download notifications appear in real-time via WebSockets.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. Security -->
+        <section id="security" class="mb-10 sm:mb-16 fade-in">
+            <h2 class="text-xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 gradient-bg-green text-white rounded-lg flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">9</span>
+                <span>Security Measures</span>
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div class="bg-white rounded-xl border p-4 sm:p-5">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">🔐 Authentication & Authorization</h4>
+                    <ul class="space-y-2 text-xs sm:text-sm text-gray-600">
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> JWT-based authentication with refresh tokens</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Password hashing with bcrypt (12 rounds)</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Django's built-in RBAC (Groups & Permissions)</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Auto role detection from credentials</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Two-Factor Authentication (2FA) option</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Account lockout after 5 failed attempts</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl border p-4 sm:p-5">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">🛡️ Data Protection</h4>
+                    <ul class="space-y-2 text-xs sm:text-sm text-gray-600">
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Django's native CSRF, XSS, SQLi protection</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> TLS 1.3 encryption for data in transit</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> AES-256 encryption for files at rest</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Magic byte file validation</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Malware scanning on upload (ClamAV)</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Content Security Policy headers</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl border p-4 sm:p-5">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">📋 Audit & Compliance</h4>
+                    <ul class="space-y-2 text-xs sm:text-sm text-gray-600">
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Complete audit trail of all actions</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Immutable activity logs</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Data retention policies</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Regular security audits</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Automated backup (daily incremental)</li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl border p-4 sm:p-5">
+                    <h4 class="font-semibold text-gray-800 mb-3 text-sm sm:text-base">🚨 Threat Prevention</h4>
+                    <ul class="space-y-2 text-xs sm:text-sm text-gray-600">
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> DDoS protection via CloudFlare</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Brute force attack prevention</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> File size limits to prevent abuse</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Suspicious activity detection</li>
+                        <li class="flex items-start gap-2"><span class="text-green-500">✓</span> Student privilege escalation blocked</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. Timeline -->
+        <section id="timeline" class="mb-10 sm:mb-16 fade-in">
+            <h2 class="text-xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 gradient-bg-gold text-[#1A2E1A] rounded-lg flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">10</span>
+                <span>Development Timeline (8 Weeks)</span>
+            </h2>
+            <div class="bg-white rounded-xl border p-4 sm:p-6">
+                <div class="relative pl-6 sm:pl-8 space-y-4 sm:space-y-6">
+                    <div class="relative timeline-item">
+                        <div class="bg-blue-50 rounded-lg p-3 sm:p-4 border border-blue-100">
+                            <div class="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                                <span class="bg-[#1E40AF] text-white text-[10px] sm:text-xs px-2 py-1 rounded-full">Week 1-2</span>
+                                <span class="font-semibold text-gray-800 text-sm sm:text-base">Planning & Setup</span>
+                            </div>
+                            <ul class="text-xs sm:text-sm text-gray-600 space-y-1">
+                                <li>• Requirements gathering & DB schema design</li>
+                                <li>• Django + Next.js project setup</li>
+                                <li>• CI/CD pipeline configuration</li>
+                                <li>• Custom User model with auto-role detection</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative timeline-item">
+                        <div class="bg-green-50 rounded-lg p-3 sm:p-4 border border-green-100">
+                            <div class="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                                <span class="bg-[#006A4E] text-white text-[10px] sm:text-xs px-2 py-1 rounded-full">Week 3-4</span>
+                                <span class="font-semibold text-gray-800 text-sm sm:text-base">Django Backend Development</span>
+                            </div>
+                            <ul class="text-xs sm:text-sm text-gray-600 space-y-1">
+                                <li>• Authentication system (JWT, RBAC)</li>
+                                <li>• File upload/download APIs with S3</li>
+                                <li>• Download tracking & activity logging</li>
+                                <li>• Django Admin panel customization</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative timeline-item">
+                        <div class="bg-blue-50 rounded-lg p-3 sm:p-4 border border-blue-100">
+                            <div class="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                                <span class="bg-[#1E40AF] text-white text-[10px] sm:text-xs px-2 py-1 rounded-full">Week 5-6</span>
+                                <span class="font-semibold text-gray-800 text-sm sm:text-base">Next.js Frontend Development</span>
+                            </div>
+                            <ul class="text-xs sm:text-sm text-gray-600 space-y-1">
+                                <li>• QAU-branded UI (Green, Gold, Blue)</li>
+                                <li>• Login with auto role detection</li>
+                                <li>• Dashboard, file browser, upload UI</li>
+                                <li>• Role-specific views (student limitations)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative timeline-item">
+                        <div class="bg-yellow-50 rounded-lg p-3 sm:p-4 border border-yellow-100">
+                            <div class="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                                <span class="bg-[#C9A227] text-[#1A2E1A] text-[10px] sm:text-xs px-2 py-1 rounded-full">Week 7</span>
+                                <span class="font-semibold text-gray-800 text-sm sm:text-base">Integration & Security Audit</span>
+                            </div>
+                            <ul class="text-xs sm:text-sm text-gray-600 space-y-1">
+                                <li>• Frontend-Backend API integration</li>
+                                <li>• Real-time features (Django Channels)</li>
+                                <li>• Penetration testing</li>
+                                <li>• Performance optimization</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="relative timeline-item">
+                        <div class="bg-red-50 rounded-lg p-3 sm:p-4 border border-red-100">
+                            <div class="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
+                                <span class="bg-red-600 text-white text-[10px] sm:text-xs px-2 py-1 rounded-full">Week 8</span>
+                                <span class="font-semibold text-gray-800 text-sm sm:text-base">Deployment & Launch</span>
+                            </div>
+                            <ul class="text-xs sm:text-sm text-gray-600 space-y-1">
+                                <li>• Production deployment (AWS/DigitalOcean)</li>
+                                <li>• DNS & SSL configuration</li>
+                                <li>• User training & documentation</li>
+                                <li>• Go-live & support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="mb-10 sm:mb-16 fade-in">
+            <div class="gradient-bg rounded-2xl p-5 sm:p-8 text-white relative overflow-hidden">
+                <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+                <div class="relative z-10">
+                    <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">📝 Project Summary</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                        <div>
+                            <h4 class="text-[#C9A227] font-semibold mb-2 text-sm sm:text-base">What We're Building</h4>
+                            <p class="text-xs sm:text-sm text-green-100">A secure file sharing portal for QAU with Django backend + Next.js frontend, complete tracking, and strict role-based access.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-[#C9A227] font-semibold mb-2 text-sm sm:text-base">Key Differentiators</h4>
+                            <p class="text-xs sm:text-sm text-green-100">Auto role detection, student read-only enforcement, real-time tracking, and QAU-branded UI.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-[#C9A227] font-semibold mb-2 text-sm sm:text-base">Expected Impact</h4>
+                            <p class="text-xs sm:text-sm text-green-100">Eliminate email/USB file sharing, provide complete visibility, and secure academic documents.</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <p class="text-xs sm:text-sm text-green-200">Document Version: 3.0 | November 2026</p>
+                        <button onclick="showPortal()" class="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 gradient-bg-gold text-[#1A2E1A] rounded-xl font-bold hover:shadow-2xl transition text-sm sm:text-base">
+                            View Working Portal →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- ============ PORTAL ============ -->
+<div id="portal" class="hidden min-h-screen bg-gray-50">
+    
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-screen gradient-bg flex items-center justify-center p-4 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+        
+        <div class="w-full max-w-md fade-in relative z-10 py-6">
+            <div class="text-center mb-6 sm:mb-8">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto bg-white rounded-2xl flex items-center justify-center shadow-2xl mb-4 border-4 border-[#C9A227]">
+                    <span class="text-2xl sm:text-3xl font-black text-[#006A4E]">QAU</span>
+                </div>
+                <div class="inline-block px-3 py-1 bg-[#C9A227] text-[#1A2E1A] rounded-full text-[10px] sm:text-xs font-bold tracking-wider mb-2">QUAID-E-AZAM UNIVERSITY</div>
+                <h1 class="text-xl sm:text-2xl font-bold text-white">File Sharing Portal</h1>
+                <p class="text-green-200 text-xs sm:text-sm mt-1">Secure • Trackable • Role-Based Access</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-2xl p-5 sm:p-8">
+                <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 text-center">Sign In</h2>
+                <p class="text-xs text-gray-500 text-center mb-4 sm:mb-6">Your role will be auto-detected from credentials</p>
+                
+                <div class="space-y-3 sm:space-y-4">
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700 mb-1 block">Email or Registration Number</label>
+                        <input type="text" id="loginEmail" value="admin@qau.edu.pk" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#006A4E] focus:border-transparent outline-none transition" placeholder="e.g., dr.name@qau.edu.pk or 2024-cs-123">
+                        <p class="text-[10px] sm:text-xs text-gray-400 mt-1">💡 Role auto-detected: Admin / Faculty / Student</p>
+                    </div>
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700 mb-1 block">Password</label>
+                        <div class="relative">
+                            <input type="password" id="loginPassword" value="password123" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#006A4E] focus:border-transparent outline-none transition" placeholder="Enter password">
+                            <button onclick="togglePassword()" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600 p-1">
+                                <span id="eyeIcon">👁️</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs sm:text-sm">
+                        <label class="flex items-center gap-2 text-gray-600">
+                            <input type="checkbox" checked class="rounded text-[#006A4E] w-4 h-4"> Remember me
+                        </label>
+                        <a href="#" class="text-[#1E40AF] hover:underline">Forgot password?</a>
+                    </div>
+                    <button onclick="handleLogin()" class="w-full py-3 btn-primary rounded-xl font-semibold shadow-lg text-sm sm:text-base">
+                        Sign In →
+                    </button>
+                </div>
+                
+                <div class="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-100">
+                    <p class="text-[10px] sm:text-xs text-gray-500 text-center mb-2 sm:mb-3">Try demo logins:</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="demoLogin('admin@qau.edu.pk')" class="px-2 py-2 bg-red-50 text-red-700 rounded-lg text-[10px] sm:text-xs font-medium hover:bg-red-100 transition border border-red-100">
+                            👑 Admin
+                        </button>
+                        <button onclick="demoLogin('dr.sara@qau.edu.pk')" class="px-2 py-2 bg-blue-50 text-[#1E40AF] rounded-lg text-[10px] sm:text-xs font-medium hover:bg-blue-100 transition border border-blue-100">
+                            👨‍🏫 Faculty
+                        </button>
+                        <button onclick="demoLogin('2024-cs-156')" class="px-2 py-2 bg-green-50 text-green-700 rounded-lg text-[10px] sm:text-xs font-medium hover:bg-green-100 transition border border-green-100">
+                            🎓 Student
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-3 sm:mt-4 text-center">
+                    <button onclick="showLanding()" class="text-xs sm:text-sm text-gray-400 hover:text-gray-600">← Back to Documentation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Portal -->
+    <div id="mainPortal" class="hidden">
+        <!-- Sidebar Overlay (mobile) -->
+        <div id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center border-2 border-[#C9A227] flex-shrink-0">
+                        <span class="text-sm font-black text-[#006A4E]">QAU</span>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="font-bold text-gray-800 text-sm truncate">QAU File Portal</h3>
+                        <p class="text-xs text-gray-500 truncate">Quaid-e-Azam University</p>
+                    </div>
+                </div>
+                <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg">
+                    ✕
+                </button>
+            </div>
+            <nav id="sidebarNav" class="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin">
+                <!-- Items injected by JS based on role -->
+            </nav>
+            <div class="p-4 border-t border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-[#006A4E] text-white rounded-full flex items-center justify-center font-semibold text-sm flex-shrink-0" id="userAvatar">A</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-800 truncate" id="userName">Admin User</p>
+                        <p class="text-xs text-gray-500 truncate" id="userRole">Administrator</p>
+                    </div>
+                    <button onclick="handleLogout()" class="text-gray-400 hover:text-red-500 transition p-2" title="Logout">🚪</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main id="mainContentArea" class="lg:ml-64 min-h-screen">
+            <!-- Top Bar -->
+            <header class="sticky top-0 z-40 bg-white border-b border-gray-200 px-3 sm:px-6 py-3 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                    <!-- Mobile hamburger -->
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg flex-shrink-0" aria-label="Open menu">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                    <!-- Search -->
+                    <div class="relative flex-1 max-w-md">
+                        <input type="text" placeholder="Search files..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#006A4E] outline-none">
+                        <span class="absolute left-3 top-2.5 text-gray-400">🔍</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+                    <button class="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition" aria-label="Notifications">
+                        🔔
+                        <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center notification-badge">3</span>
+                    </button>
+                    <div class="hidden sm:block w-px h-6 bg-gray-200"></div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-[#006A4E] text-white rounded-full flex items-center justify-center font-semibold text-xs flex-shrink-0" id="topAvatar">A</div>
+                        <span class="text-sm font-medium text-gray-700 hidden sm:inline" id="topName">Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-3 sm:p-6" id="mainContent">
+                <!-- Tab content injected by JS -->
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-4 sm:bottom-6 bg-[#006A4E] text-white px-4 sm:px-6 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center gap-2 sm:gap-3">
+    <span id="toastIcon">✅</span>
+    <span id="toastMessage" class="text-sm sm:text-base">Success!</span>
+</div>
+
+<script>
+// ============ STATE ============
+let currentUser = null;
+let currentTab = 'dashboard';
+
+const USERS = {
+    'admin@qau.edu.pk': { name: 'Dr. Asif Mahmood', role: 'admin', dept: 'Administration', email: 'admin@qau.edu.pk', avatar: 'A' },
+    'dr.sara@qau.edu.pk': { name: 'Dr. Sara Malik', role: 'faculty', dept: 'Physics', email: 'dr.sara@qau.edu.pk', avatar: 'S' },
+    '2024-cs-156': { name: 'Ahmad Khan', role: 'student', dept: 'Computer Science', regNo: '2024-CS-156', email: 'ahmad.khan@qau.edu.pk', avatar: 'A' }
+};
+
+const files = [
+    { name: 'Course_Syllabus_2026.pdf', icon: '📄', size: '2.4 MB', type: 'PDF', uploadedBy: 'Dr. Ahmad', dept: 'Computer Science', date: 'Nov 18, 2026', downloads: 145 },
+    { name: 'Research_Paper_Final.docx', icon: '📝', size: '3.2 MB', type: 'DOCX', uploadedBy: 'Dr. Sara', dept: 'Physics', date: 'Nov 17, 2026', downloads: 34 },
+    { name: 'Lab_Manual_v3.pdf', icon: '📄', size: '5.8 MB', type: 'PDF', uploadedBy: 'Prof. Ali', dept: 'Chemistry', date: 'Nov 16, 2026', downloads: 98 },
+    { name: 'Research_Data_Q3.xlsx', icon: '📊', size: '8.1 MB', type: 'XLSX', uploadedBy: 'Prof. Kamran', dept: 'Biology', date: 'Nov 15, 2026', downloads: 65 },
+    { name: 'Assignment_Guidelines.pdf', icon: '📄', size: '1.1 MB', type: 'PDF', uploadedBy: 'Dr. Sara', dept: 'Mathematics', date: 'Nov 14, 2026', downloads: 87 },
+    { name: 'Circuit_Diagram.png', icon: '🖼️', size: '1.5 MB', type: 'PNG', uploadedBy: 'Prof. Kamran', dept: 'Electrical Eng.', date: 'Nov 13, 2026', downloads: 23 },
+    { name: 'Exam_Schedule.pdf', icon: '📄', size: '456 KB', type: 'PDF', uploadedBy: 'Admin', dept: 'Administration', date: 'Nov 12, 2026', downloads: 234 },
+    { name: 'Project_Resources.zip', icon: '📦', size: '45.2 MB', type: 'ZIP', uploadedBy: 'Fatima Noor', dept: 'Mathematics', date: 'Nov 10, 2026', downloads: 12 }
+];
+
+// ============ AUTO ROLE DETECTION ============
+function detectRole(credential) {
+    const c = credential.toLowerCase().trim();
+    if (c.startsWith('admin@') || c.startsWith('hod@') || c.startsWith('director@') || c.startsWith('registrar@')) return 'admin';
+    if (/^\d{4}-[a-z]{2}-\d+$/i.test(c) || /^fa\d{2}-\d+$/i.test(c) || /^sp\d{2}-\d+$/i.test(c)) return 'student';
+    if (c.includes('@qau.edu.pk') || c.includes('dr.') || c.includes('prof.')) return 'faculty';
+    return 'student';
+}
+
+// ============ MOBILE SIDEBAR ============
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+}
+
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// ============ NAVIGATION ============
+function showLanding() {
+    document.getElementById('landing').classList.remove('hidden');
+    document.getElementById('documentation').classList.add('hidden');
+    document.getElementById('portal').classList.add('hidden');
+}
+function showDocument() {
+    document.getElementById('landing').classList.add('hidden');
+    document.getElementById('documentation').classList.remove('hidden');
+    document.getElementById('portal').classList.add('hidden');
+}
+function showPortal() {
+    document.getElementById('landing').classList.add('hidden');
+    document.getElementById('documentation').classList.add('hidden');
+    document.getElementById('portal').classList.remove('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+    document.getElementById('mainPortal').classList.add('hidden');
+}
+function scrollToSection(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+// ============ LOGIN ============
+function demoLogin(credential) {
+    document.getElementById('loginEmail').value = credential;
+    document.getElementById('loginPassword').value = 'password123';
+    handleLogin();
+}
+
+function handleLogin() {
+    const credential = document.getElementById('loginEmail').value.trim();
+    if (!credential) {
+        showToast('Please enter email or registration number', 'error');
+        return;
+    }
+    const role = detectRole(credential);
+    let user = USERS[credential];
+    if (!user) {
+        user = {
+            name: credential.includes('@') ? credential.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Student User',
+            role: role,
+            dept: 'Computer Science',
+            email: credential.includes('@') ? credential : 'student@qau.edu.pk',
+            avatar: credential[0].toUpperCase()
+        };
+    }
+    currentUser = user;
+    setupPortal();
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('mainPortal').classList.remove('hidden');
+    showToast(`Welcome, ${user.name}! (${user.role.toUpperCase()})`, 'success');
+}
+
+function setupPortal() {
+    document.getElementById('userName').textContent = currentUser.name;
+    document.getElementById('userRole').textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) + ' • ' + currentUser.dept;
+    document.getElementById('userAvatar').textContent = currentUser.avatar;
+    document.getElementById('topAvatar').textContent = currentUser.avatar;
+    document.getElementById('topName').textContent = currentUser.name.split(' ')[0];
+
+    const avatarColors = { admin: '#991b1b', faculty: '#1E40AF', student: '#166534' };
+    const avatarBgs = { admin: '#fecaca', faculty: '#bfdbfe', student: '#bbf7d0' };
+    document.getElementById('userAvatar').style.backgroundColor = avatarBgs[currentUser.role];
+    document.getElementById('userAvatar').style.color = avatarColors[currentUser.role];
+    document.getElementById('topAvatar').style.backgroundColor = avatarBgs[currentUser.role];
+    document.getElementById('topAvatar').style.color = avatarColors[currentUser.role];
+
+    buildSidebar();
+    const defaultTab = currentUser.role === 'student' ? 'shared' : 'dashboard';
+    switchTab(defaultTab);
+    closeMobileSidebar();
+}
+
+// ============ ROLE-BASED SIDEBAR ============
+function buildSidebar() {
+    const nav = document.getElementById('sidebarNav');
+    let items = [];
+    if (currentUser.role === 'admin') {
+        items = [
+            { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+            { id: 'files', icon: '📁', label: 'All Files' },
+            { id: 'upload', icon: '📤', label: 'Upload Files' },
+            { id: 'shared', icon: '📥', label: 'Shared with Me', badge: '5' },
+            { id: 'analytics', icon: '📈', label: 'Analytics' },
+            { id: 'activity', icon: '📋', label: 'Activity Log' },
+            { id: 'users', icon: '👥', label: 'User Management' },
+            { id: 'settings', icon: '⚙️', label: 'Settings' }
+        ];
+    } else if (currentUser.role === 'faculty') {
+        items = [
+            { id: 'dashboard', icon: '📊', label: 'Dashboard' },
+            { id: 'files', icon: '📁', label: 'My Files' },
+            { id: 'upload', icon: '📤', label: 'Upload Files' },
+            { id: 'shared', icon: '📥', label: 'Shared with Me', badge: '3' },
+            { id: 'analytics', icon: '📈', label: 'My Analytics' },
+            { id: 'activity', icon: '📋', label: 'Department Activity' },
+            { id: 'settings', icon: '⚙️', label: 'Settings' }
+        ];
+    } else {
+        items = [
+            { id: 'shared', icon: '📥', label: 'Files Shared with Me', badge: '5' },
+            { id: 'downloads', icon: '📊', label: 'My Downloads' },
+            { id: 'notifications', icon: '🔔', label: 'Notifications', badge: '2' },
+            { id: 'settings', icon: '⚙️', label: 'Settings' }
+        ];
+    }
+    nav.innerHTML = items.map(item => `
+        <button onclick="switchTab('${item.id}')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-gray-700" data-tab="${item.id}">
+            <span>${item.icon}</span>
+            <span class="flex-1 text-left">${item.label}</span>
+            ${item.badge ? `<span class="bg-[#C9A227] text-[#1A2E1A] text-xs px-2 py-0.5 rounded-full font-bold">${item.badge}</span>` : ''}
+        </button>
+    `).join('');
+}
+
+function handleLogout() {
+    currentUser = null;
+    document.getElementById('mainPortal').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+    showToast('Logged out successfully', 'info');
+}
+
+function togglePassword() {
+    const input = document.getElementById('loginPassword');
+    const icon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        icon.textContent = '👁️';
+    }
+}
+
+// ============ TAB SWITCHING ============
+function switchTab(tabName) {
+    currentTab = tabName;
+    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+    const btn = document.querySelector(`[data-tab="${tabName}"]`);
+    if (btn) btn.classList.add('active');
+    renderTab(tabName);
+    closeMobileSidebar(); // Close sidebar on mobile after selection
+}
+
+function renderTab(tabName) {
+    const content = document.getElementById('mainContent');
+    const role = currentUser.role;
+    if (role === 'student' && ['dashboard', 'files', 'upload', 'analytics', 'activity', 'users'].includes(tabName)) {
+        content.innerHTML = renderAccessDenied(tabName);
+        return;
+    }
+    const renderers = {
+        dashboard: renderDashboard,
+        files: renderFiles,
+        upload: renderUpload,
+        shared: renderShared,
+        analytics: renderAnalytics,
+        activity: renderActivity,
+        users: renderUsers,
+        settings: renderSettings,
+        downloads: renderStudentDownloads,
+        notifications: renderNotifications
+    };
+    content.innerHTML = '<div class="fade-in">' + (renderers[tabName] ? renderers[tabName]() : '<p>Coming soon</p>') + '</div>';
+    if (tabName === 'dashboard' || tabName === 'analytics') {
+        setTimeout(() => initCharts(tabName), 100);
+    }
+}
+
+function renderAccessDenied(tabName) {
+    return `
+        <div class="bg-white rounded-2xl border-2 border-red-200 p-6 sm:p-12 text-center">
+            <div class="text-5xl sm:text-6xl mb-4">🔒</div>
+            <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Access Restricted</h2>
+            <p class="text-gray-600 mb-4 text-sm sm:text-base">As a <strong class="text-green-700">Student</strong>, you don't have access to <strong class="text-red-600">${tabName}</strong>.</p>
+            <div class="bg-red-50 border border-red-200 rounded-xl p-4 max-w-md mx-auto text-left text-xs sm:text-sm text-gray-700 mb-4">
+                <p class="font-semibold text-red-800 mb-2">🎓 Student permissions:</p>
+                <ul class="space-y-1">
+                    <li>✅ View files shared with you</li>
+                    <li>✅ Download permitted files</li>
+                    <li>✅ View your download history</li>
+                    <li>❌ Upload files (not allowed)</li>
+                    <li>❌ Access admin analytics</li>
+                    <li>❌ Manage other users</li>
+                </ul>
+            </div>
+            <p class="text-xs text-gray-500 mb-4">Enforced at the backend API level — bypass is impossible.</p>
+            <button onclick="switchTab('shared')" class="px-6 py-2 btn-primary rounded-xl font-semibold text-sm sm:text-base">
+                ← Go to My Files
+            </button>
+        </div>
+    `;
+}
+
+// ============ RENDERERS ============
+function renderDashboard() {
+    return `
+        <div class="mb-4 sm:mb-6">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Dashboard</h1>
+            <p class="text-gray-500 text-xs sm:text-sm mt-1">Welcome back, ${currentUser.name}!</p>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div class="bg-white rounded-xl border p-3 sm:p-5 card-hover">
+                <div class="flex items-center justify-between mb-2 sm:mb-3">
+                    <span class="text-xl sm:text-2xl">📁</span>
+                    <span class="text-[10px] sm:text-xs text-[#006A4E] bg-green-50 px-2 py-0.5 sm:py-1 rounded-full font-medium">+12%</span>
+                </div>
+                <div class="text-xl sm:text-2xl font-bold text-gray-800">247</div>
+                <div class="text-xs sm:text-sm text-gray-500">Total Files</div>
+            </div>
+            <div class="bg-white rounded-xl border p-3 sm:p-5 card-hover">
+                <div class="flex items-center justify-between mb-2 sm:mb-3">
+                    <span class="text-xl sm:text-2xl">📥</span>
+                    <span class="text-[10px] sm:text-xs text-[#1E40AF] bg-blue-50 px-2 py-0.5 sm:py-1 rounded-full font-medium">+28%</span>
+                </div>
+                <div class="text-xl sm:text-2xl font-bold text-gray-800">1,832</div>
+                <div class="text-xs sm:text-sm text-gray-500">Downloads</div>
+            </div>
+            <div class="bg-white rounded-xl border p-3 sm:p-5 card-hover">
+                <div class="flex items-center justify-between mb-2 sm:mb-3">
+                    <span class="text-xl sm:text-2xl">👥</span>
+                    <span class="text-[10px] sm:text-xs text-[#C9A227] bg-yellow-50 px-2 py-0.5 sm:py-1 rounded-full font-medium">+5</span>
+                </div>
+                <div class="text-xl sm:text-2xl font-bold text-gray-800">156</div>
+                <div class="text-xs sm:text-sm text-gray-500">Active Users</div>
+            </div>
+            <div class="bg-white rounded-xl border p-3 sm:p-5 card-hover">
+                <div class="flex items-center justify-between mb-2 sm:mb-3">
+                    <span class="text-xl sm:text-2xl">💾</span>
+                    <span class="text-[10px] sm:text-xs text-purple-700 bg-purple-50 px-2 py-0.5 sm:py-1 rounded-full font-medium">68%</span>
+                </div>
+                <div class="text-xl sm:text-2xl font-bold text-gray-800">2.4 GB</div>
+                <div class="text-xs sm:text-sm text-gray-500">Storage Used</div>
+                <div class="mt-2 w-full bg-gray-100 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-[#006A4E] via-[#C9A227] to-[#1E40AF] h-2 rounded-full progress-bar" style="width: 68%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+            <div class="bg-white rounded-xl border p-3 sm:p-5">
+                <h3 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">Downloads This Week</h3>
+                <div style="position: relative; height: 200px;"><canvas id="downloadsChart"></canvas></div>
+            </div>
+            <div class="bg-white rounded-xl border p-3 sm:p-5">
+                <h3 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">Files by Department</h3>
+                <div style="position: relative; height: 200px;"><canvas id="departmentChart"></canvas></div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl border p-3 sm:p-5">
+            <h3 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">Recent Activity</h3>
+            <div class="space-y-2 sm:space-y-3">
+                ${renderActivityItem('📥', 'blue', 'Ahmad Khan', 'downloaded', 'Course_Syllabus_2026.pdf', '2 min ago')}
+                ${renderActivityItem('📤', 'green', 'Dr. Sara Malik', 'uploaded', 'Research_Paper_Final.docx', '15 min ago')}
+                ${renderActivityItem('🔗', 'purple', 'Prof. Ali Hassan', 'shared', 'Lab_Manual_v3.pdf', '1 hr ago')}
+                ${renderActivityItem('📥', 'yellow', 'Fatima Noor', 'downloaded', 'Assignment_Guidelines.pdf', '2 hrs ago')}
+            </div>
+        </div>
+    `;
+}
+
+function renderActivityItem(icon, color, user, action, file, time) {
+    const colorMap = { blue: '#1E40AF', green: '#006A4E', purple: '#7c3aed', yellow: '#C9A227', red: '#dc2626' };
+    const bgMap = { blue: '#eff6ff', green: '#f0fdf4', purple: '#faf5ff', yellow: '#fefce8', red: '#fef2f2' };
+    return `
+        <div class="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg" style="background-color: ${bgMap[color]}">
+            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm flex-shrink-0">${icon}</div>
+            <div class="flex-1 min-w-0">
+                <p class="text-xs sm:text-sm text-gray-800 truncate"><strong>${user}</strong> ${action} <strong style="color: ${colorMap[color]}">${file}</strong></p>
+            </div>
+            <span class="text-[10px] sm:text-xs text-gray-400 flex-shrink-0">${time}</span>
+        </div>
+    `;
+}
+
+function renderFiles() {
+    return `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-800">${currentUser.role === 'admin' ? 'All Files' : 'My Files'}</h1>
+                <p class="text-gray-500 text-xs sm:text-sm mt-1">Manage your uploaded files</p>
+            </div>
+            <button onclick="switchTab('upload')" class="px-4 py-2 btn-primary rounded-xl text-sm font-medium shadow w-full sm:w-auto">+ Upload New</button>
+        </div>
+        <div class="bg-white rounded-xl border overflow-hidden">
+            <!-- Desktop Table View -->
+            <div class="hidden md:block overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 border-b text-xs font-semibold text-gray-500 uppercase">
+                            <th class="text-left py-3 px-4">File Name</th>
+                            <th class="text-left py-3 px-4">Size</th>
+                            <th class="text-left py-3 px-4">Uploaded</th>
+                            <th class="text-left py-3 px-4">Downloads</th>
+                            <th class="text-left py-3 px-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        ${files.map(f => `
+                            <tr class="file-row transition">
+                                <td class="py-3 px-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-lg">${f.icon}</span>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-medium text-gray-800 truncate">${f.name}</p>
+                                            <p class="text-xs text-gray-500">${f.type} • ${f.dept}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-4 text-gray-600 text-sm">${f.size}</td>
+                                <td class="py-3 px-4 text-gray-500 text-sm">${f.date}</td>
+                                <td class="py-3 px-4"><span class="text-sm font-semibold text-[#006A4E]">${f.downloads}</span></td>
+                                <td class="py-3 px-4">
+                                    <div class="flex gap-1">
+                                        <button onclick="downloadFile('${f.name}')" class="px-2 py-1 bg-green-50 text-green-700 rounded text-xs hover:bg-green-100">⬇️</button>
+                                        <button onclick="shareFile('${f.name}')" class="px-2 py-1 bg-blue-50 text-[#1E40AF] rounded text-xs hover:bg-blue-100">🔗</button>
+                                        <button onclick="deleteFile('${f.name}')" class="px-2 py-1 bg-red-50 text-red-700 rounded text-xs hover:bg-red-100">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Mobile Card View -->
+            <div class="md:hidden divide-y divide-gray-100">
+                ${files.map(f => `
+                    <div class="p-3 file-row">
+                        <div class="flex items-start gap-3 mb-2">
+                            <span class="text-2xl">${f.icon}</span>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">${f.name}</p>
+                                <p class="text-xs text-gray-500">${f.type} • ${f.dept}</p>
+                            </div>
+                            <span class="text-sm font-semibold text-[#006A4E] flex-shrink-0">${f.downloads} ⬇️</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+                            <span>${f.size}</span>
+                            <span>${f.date}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="downloadFile('${f.name}')" class="flex-1 py-2 bg-green-50 text-green-700 rounded-lg text-xs font-medium">⬇️ Download</button>
+                            <button onclick="shareFile('${f.name}')" class="flex-1 py-2 bg-blue-50 text-[#1E40AF] rounded-lg text-xs font-medium">🔗 Share</button>
+                            <button onclick="deleteFile('${f.name}')" class="py-2 px-3 bg-red-50 text-red-700 rounded-lg text-xs font-medium">🗑️</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function renderUpload() {
+    return `
+        <div class="mb-4 sm:mb-6">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Upload Files</h1>
+            <p class="text-gray-500 text-xs sm:text-sm mt-1">Upload and share files with your department</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div class="lg:col-span-2">
+                <div id="uploadZone" class="upload-zone bg-white rounded-2xl p-6 sm:p-12 text-center cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" multiple class="hidden" onchange="handleFileSelect(event)">
+                    <div class="text-4xl sm:text-5xl mb-3 sm:mb-4">📁</div>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-2">Drag & Drop files here</h3>
+                    <p class="text-gray-500 text-xs sm:text-sm mb-3 sm:mb-4">or click to browse</p>
+                    <div class="flex flex-wrap gap-1.5 sm:gap-2 justify-center">
+                        <span class="px-2 py-1 bg-gray-100 rounded text-[10px] sm:text-xs text-gray-600">PDF</span>
+                        <span class="px-2 py-1 bg-gray-100 rounded text-[10px] sm:text-xs text-gray-600">DOC/DOCX</span>
+                        <span class="px-2 py-1 bg-gray-100 rounded text-[10px] sm:text-xs text-gray-600">XLS/XLSX</span>
+                        <span class="px-2 py-1 bg-gray-100 rounded text-[10px] sm:text-xs text-gray-600">PPT</span>
+                        <span class="px-2 py-1 bg-gray-100 rounded text-[10px] sm:text-xs text-gray-600">Images</span>
+                        <span class="px-2 py-1 bg-gray-100 rounded text-[10px] sm:text-xs text-gray-600">ZIP</span>
+                    </div>
+                    <p class="text-[10px] sm:text-xs text-gray-400 mt-3 sm:mt-4">Max 500MB per file • Magic byte validation</p>
+                </div>
+                <div id="uploadQueue" class="mt-4 hidden">
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm sm:text-base">Upload Queue</h4>
+                    <div id="uploadItems"></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border p-4 sm:p-5">
+                <h3 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">Upload Settings</h3>
+                <div class="space-y-3 sm:space-y-4">
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700 mb-1 block">Description</label>
+                        <textarea class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#006A4E] outline-none resize-none" rows="3" placeholder="Add description..."></textarea>
+                    </div>
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700 mb-1 block">Department</label>
+                        <select class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#006A4E] outline-none">
+                            <option>${currentUser.dept}</option>
+                            <option>Computer Science</option>
+                            <option>Physics</option>
+                            <option>Mathematics</option>
+                            <option>Chemistry</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700 mb-1 block">Share With</label>
+                        <select class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#006A4E] outline-none">
+                            <option>Everyone (Public)</option>
+                            <option>Specific Department</option>
+                            <option>Specific Users</option>
+                            <option>Only Me</option>
+                        </select>
+                    </div>
+                    <button onclick="showToast('Files uploaded successfully!', 'success')" class="w-full py-3 btn-primary rounded-xl font-semibold shadow text-sm sm:text-base">📤 Upload & Share</button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderShared() {
+    const isStudent = currentUser.role === 'student';
+    const sharedFiles = [
+        { name: 'Research_Methodology.pdf', icon: '📄', size: '4.2 MB', by: 'Dr. Sara Malik', dept: 'Physics', date: 'Nov 15, 2026' },
+        { name: 'Lab_Results_Sem5.xlsx', icon: '📊', size: '2.8 MB', by: 'Prof. Ali Hassan', dept: 'Chemistry', date: 'Nov 14, 2026' },
+        { name: 'Assignment_Brief_CS301.docx', icon: '📑', size: '856 KB', by: 'Dr. Ahmad Khan', dept: 'Computer Science', date: 'Nov 13, 2026' },
+        { name: 'Circuit_Diagram.png', icon: '🖼️', size: '1.5 MB', by: 'Prof. Kamran', dept: 'Electrical Eng.', date: 'Nov 12, 2026' },
+        { name: 'Project_Resources.zip', icon: '📦', size: '45.2 MB', by: 'Fatima Noor', dept: 'Mathematics', date: 'Nov 10, 2026' }
+    ];
+    return `
+        <div class="mb-4 sm:mb-6">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Files Shared with Me</h1>
+            <p class="text-gray-500 text-xs sm:text-sm mt-1">${isStudent ? 'Files shared by your faculty' : 'Files shared with you'}</p>
+        </div>
+        <div class="bg-white rounded-xl border overflow-hidden">
+            <!-- Desktop Table -->
+            <div class="hidden md:block overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 border-b text-xs font-semibold text-gray-500 uppercase">
+                            <th class="text-left py-3 px-4">File Name</th>
+                            <th class="text-left py-3 px-4">Shared By</th>
+                            <th class="text-left py-3 px-4">Department</th>
+                            <th class="text-left py-3 px-4">Shared On</th>
+                            <th class="text-left py-3 px-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        ${sharedFiles.map(f => `
+                            <tr class="file-row transition">
+                                <td class="py-3 px-4">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-lg">${f.icon}</span>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-medium text-gray-800 truncate">${f.name}</p>
+                                            <p class="text-xs text-gray-500">${f.size}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-4 text-gray-600 text-sm">${f.by}</td>
+                                <td class="py-3 px-4 text-gray-600 text-sm">${f.dept}</td>
+                                <td class="py-3 px-4 text-gray-500 text-sm">${f.date}</td>
+                                <td class="py-3 px-4">
+                                    <button onclick="downloadFile('${f.name}')" class="px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-xs font-medium hover:bg-green-100">⬇️ Download</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Mobile Cards -->
+            <div class="md:hidden divide-y divide-gray-100">
+                ${sharedFiles.map(f => `
+                    <div class="p-3 file-row">
+                        <div class="flex items-start gap-3 mb-2">
+                            <span class="text-2xl">${f.icon}</span>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">${f.name}</p>
+                                <p class="text-xs text-gray-500">${f.size} • ${f.dept}</p>
+                                <p class="text-xs text-gray-400 mt-1">By ${f.by} • ${f.date}</p>
+                            </div>
+                        </div>
+                        <button onclick="downloadFile('${f.name}')" class="w-full py-2 bg-green-50 text-green-700 rounded-lg text-xs font-medium">⬇️ Download</button>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function renderAnalytics() {
+    return `
+        <div class="mb-4 sm:mb-6">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800">${currentUser.role === 'faculty' ? 'My Analytics' : 'Analytics & Tracking'}</h1>
+            <p class="text-gray-500 text-xs sm:text-sm mt-1">Detailed insights into file usage</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+            <div class="bg-white rounded-xl border p-3 sm:p-5">
+                <h3 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">Monthly Downloads</h3>
+                <div style="position: relative; height: 200px;"><canvas id="monthlyChart"></canvas></div>
+            </div>
+            <div class="bg-white rounded-xl border p-3 sm:p-5">
+                <h3 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">File Type Distribution</h3>
+                <div style="position: relative; height: 200px;"><canvas id="fileTypeChart"></canvas></div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl border p-3 sm:p-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-2">
+                <h3 class="font-semibold text-gray-800 text-sm sm:text-base">📋 Download Tracking Log</h3>
+                <div class="flex gap-2">
+                    <select class="px-2 sm:px-3 py-1.5 border border-gray-200 rounded-lg text-xs outline-none">
+                        <option>Last 7 days</option>
+                        <option>Last 30 days</option>
+                        <option>All time</option>
+                    </select>
+                    <button class="px-2 sm:px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-xs font-medium">📥 Export</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs sm:text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-2 sm:py-3 px-2 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase">User</th>
+                            <th class="text-left py-2 sm:py-3 px-2 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase">File</th>
+                            <th class="text-left py-2 sm:py-3 px-2 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Dept</th>
+                            <th class="text-left py-2 sm:py-3 px-2 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase hidden md:table-cell">Date</th>
+                            <th class="text-left py-2 sm:py-3 px-2 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase hidden lg:table-cell">Device</th>
+                            <th class="text-left py-2 sm:py-3 px-2 text-[10px] sm:text-xs font-semibold text-gray-500 uppercase hidden lg:table-cell">IP</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        ${[
+                            { u: 'Ahmad Khan', c: 'A', clr: 'blue', f: 'Course_Syllabus_2026.pdf', d: 'CS', t: 'Nov 18, 10:32', dev: '💻 Desktop', ip: '192.168.1.45' },
+                            { u: 'Fatima Noor', c: 'F', clr: 'pink', f: 'Assignment_Guidelines.pdf', d: 'Math', t: 'Nov 18, 09:15', dev: '📱 Mobile', ip: '192.168.1.78' },
+                            { u: 'Usman Ali', c: 'U', clr: 'green', f: 'Lab_Manual_v3.pdf', d: 'Physics', t: 'Nov 17, 04:22', dev: '💻 Desktop', ip: '192.168.1.102' },
+                            { u: 'Zainab Malik', c: 'Z', clr: 'yellow', f: 'Research_Data_Q3.xlsx', d: 'Chem', t: 'Nov 17, 02:45', dev: '💻 Desktop', ip: '192.168.1.56' }
+                        ].map(r => `
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-2 sm:py-3 px-2"><div class="flex items-center gap-1 sm:gap-2"><div class="w-5 h-5 sm:w-6 sm:h-6 bg-${r.clr}-100 rounded-full flex items-center justify-center text-[10px] sm:text-xs flex-shrink-0">${r.c}</div><span class="truncate">${r.u}</span></div></td>
+                                <td class="py-2 sm:py-3 px-2 text-gray-600 truncate max-w-[120px] sm:max-w-none">${r.f}</td>
+                                <td class="py-2 sm:py-3 px-2 text-gray-600 hidden sm:table-cell">${r.d}</td>
+                                <td class="py-2 sm:py-3 px-2 text-gray-500 hidden md:table-cell">${r.t}</td>
+                                <td class="py-2 sm:py-3 px-2 text-gray-600 hidden lg:table-cell">${r.dev}</td>
+                                <td class="py-2 sm:py-3 px-2 text-gray-500 font-mono text-[10px] sm:text-xs hidden lg:table-cell">${r.ip}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function renderActivity() {
+    return `
+        <div class="mb-4 sm:mb-6">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800">${currentUser.role === 'faculty' ? 'Department Activity' : 'Activity Log'}</h1>
+            <p class="text-gray-500 text-xs sm:text-sm mt-1">Complete audit trail</p>
+        </div>
+        <div class="bg-white rounded-xl border p-3 sm:p-5">
+            <div class="space-y-2 sm:space-y-3">
+                ${[
+                    { icon: '📤', color: 'green', user: 'Dr. Sara Malik', action: 'uploaded', target: 'Research_Paper_Final.docx', time: '2 min ago', detail: 'Physics • 3.2 MB' },
+                    { icon: '📥', color: 'blue', user: 'Ahmad Khan', action: 'downloaded', target: 'Course_Syllabus_2026.pdf', time: '15 min ago', detail: 'CS • Desktop' },
+                    { icon: '🔗', color: 'purple', user: 'Prof. Ali Hassan', action: 'shared', target: 'Lab_Manual_v3.pdf', time: '1 hr ago', detail: 'With Chemistry' },
+                    { icon: '🔐', color: 'yellow', user: 'Fatima Noor', action: 'logged in', target: '', time: '2 hrs ago', detail: 'IP: 192.168.1.78' },
+                    { icon: '❌', color: 'red', user: 'Admin', action: 'deleted', target: 'old_report_2024.xlsx', time: '3 hrs ago', detail: 'Outdated data' }
+                ].map(a => `
+                    <div class="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-gray-50 transition">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 bg-${a.color}-100 rounded-full flex items-center justify-center text-xs sm:text-sm mt-0.5 flex-shrink-0">${a.icon}</div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs sm:text-sm text-gray-800"><strong>${a.user}</strong> ${a.action} ${a.target ? `<span class="text-[#006A4E] font-medium">${a.target}</span>` : ''}</p>
+                            <p class="text-[10px] sm:text-xs text-gray-500 mt-0.5">${a.detail}</p>
+                        </div>
+                        <span class="text-[10px] sm:text-xs text-gray-400 flex-shrink-0">${a.time}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function renderUsers() {
+    return `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-3">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-800">User Management</h1>
+                <p class="text-gray-500 text-xs sm:text-sm mt-1">Manage users and permissions</p>
+            </div>
+            <button class="px-4 py-2 btn-primary rounded-xl text-sm font-medium shadow w-full sm:w-auto">+ Add User</button>
+        </div>
+        <div class="bg-white rounded-xl border overflow-hidden">
+            <!-- Desktop Table -->
+            <div class="hidden md:block overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 border-b text-xs font-semibold text-gray-500 uppercase">
+                            <th class="text-left py-3 px-4">User</th>
+                            <th class="text-left py-3 px-4">Reg #</th>
+                            <th class="text-left py-3 px-4">Department</th>
+                            <th class="text-left py-3 px-4">Role</th>
+                            <th class="text-left py-3 px-4">Status</th>
+                            <th class="text-left py-3 px-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        ${[
+                            { n: 'Dr. Asif Mahmood', e: 'admin@qau.edu.pk', r: 'QAU-001', d: 'Administration', role: 'admin', rc: 'red', bg: 'red', s: 'Online' },
+                            { n: 'Dr. Sara Malik', e: 'dr.sara@qau.edu.pk', r: 'QAU-F-045', d: 'Physics', role: 'faculty', rc: 'blue', bg: 'blue', s: 'Online' },
+                            { n: 'Ahmad Khan', e: 'ahmad@qau.edu.pk', r: '2024-CS-156', d: 'Computer Science', role: 'student', rc: 'green', bg: 'green', s: 'Offline' },
+                            { n: 'Prof. Ali Hassan', e: 'ali.hassan@qau.edu.pk', r: 'QAU-F-023', d: 'Chemistry', role: 'faculty', rc: 'blue', bg: 'blue', s: 'Online' },
+                            { n: 'Fatima Noor', e: 'fatima@qau.edu.pk', r: '2024-Math-089', d: 'Mathematics', role: 'student', rc: 'green', bg: 'green', s: 'Online' }
+                        ].map(u => `
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="py-3 px-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 bg-${u.bg}-100 rounded-full flex items-center justify-center text-xs font-semibold text-${u.rc}-700 flex-shrink-0">${u.n[0]}</div>
+                                        <div class="min-w-0">
+                                            <p class="text-sm font-medium text-gray-800 truncate">${u.n}</p>
+                                            <p class="text-xs text-gray-500 truncate">${u.e}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-4 text-gray-600 text-xs font-mono">${u.r}</td>
+                                <td class="py-3 px-4 text-gray-600 text-sm">${u.d}</td>
+                                <td class="py-3 px-4"><span class="px-2 py-1 bg-${u.bg}-50 text-${u.rc}-700 rounded-full text-xs font-medium capitalize">${u.role}</span></td>
+                                <td class="py-3 px-4"><span class="flex items-center gap-1 text-xs ${u.s === 'Online' ? 'text-green-600' : 'text-gray-400'}"><span class="w-2 h-2 ${u.s === 'Online' ? 'bg-green-500 pulse-dot' : 'bg-gray-300'} rounded-full"></span> ${u.s}</span></td>
+                                <td class="py-3 px-4"><button class="px-2 py-1 bg-gray-50 text-gray-600 rounded text-xs hover:bg-gray-100">Edit</button></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Mobile Cards -->
+            <div class="md:hidden divide-y divide-gray-100">
+                ${[
+                    { n: 'Dr. Asif Mahmood', e: 'admin@qau.edu.pk', r: 'QAU-001', d: 'Administration', role: 'admin', rc: 'red', bg: 'red', s: 'Online' },
+                    { n: 'Dr. Sara Malik', e: 'dr.sara@qau.edu.pk', r: 'QAU-F-045', d: 'Physics', role: 'faculty', rc: 'blue', bg: 'blue', s: 'Online' },
+                    { n: 'Ahmad Khan', e: 'ahmad@qau.edu.pk', r: '2024-CS-156', d: 'Computer Science', role: 'student', rc: 'green', bg: 'green', s: 'Offline' },
+                    { n: 'Prof. Ali Hassan', e: 'ali.hassan@qau.edu.pk', r: 'QAU-F-023', d: 'Chemistry', role: 'faculty', rc: 'blue', bg: 'blue', s: 'Online' },
+                    { n: 'Fatima Noor', e: 'fatima@qau.edu.pk', r: '2024-Math-089', d: 'Mathematics', role: 'student', rc: 'green', bg: 'green', s: 'Online' }
+                ].map(u => `
+                    <div class="p-3">
+                        <div class="flex items-start gap-3 mb-2">
+                            <div class="w-10 h-10 bg-${u.bg}-100 rounded-full flex items-center justify-center text-sm font-semibold text-${u.rc}-700 flex-shrink-0">${u.n[0]}</div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">${u.n}</p>
+                                <p class="text-xs text-gray-500 truncate">${u.e}</p>
+                                <p class="text-xs text-gray-400 mt-1">${u.r} • ${u.d}</p>
+                            </div>
+                            <span class="flex items-center gap-1 text-xs ${u.s === 'Online' ? 'text-green-600' : 'text-gray-400'} flex-shrink-0"><span class="w-2 h-2 ${u.s === 'Online' ? 'bg-green-500 pulse-dot' : 'bg-gray-300'} rounded-full"></span> ${u.s}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="px-2 py-1 bg-${u.bg}-50 text-${u.rc}-700 rounded-full text-xs font-medium capitalize">${u.role}</span>
+                            <button class="px-3 py-1 bg-gray-50 text-gray-600 rounded text-xs">Edit</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function renderSettings() {
+    return `
+        <div class="mb-4 sm:mb-6">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Settings</h1>
+            <p class="text-gray-500 text-xs sm:text-sm mt-1">Configure your account preferences</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div class="bg-white rounded-xl border p-4 sm:p-5">
+                <h3 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">👤 Profile</h3>
+                <div class="space-y-3 sm:space-y-4">
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700 mb-1 block">Full Name</label>
+                        <input type="text" value="${currentUser.name}" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#006A4E] outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700 mb-1 block">Email</label>
+                        <input type="email" value="${currentUser.email}" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#006A4E] outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700 mb-1 block">Department</label>
+                        <input type="text" value="${currentUser.dept}" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50" readonly>
+                    </div>
+                    <button onclick="showToast('Profile updated!', 'success')" class="px-4 py-2 btn-primary rounded-lg text-sm font-medium w-full sm:w-auto">Save Changes</button>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border p-4 sm:p-5">
+                <h3 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">🔔 Notifications</h3>
+                <div class="space-y-3 sm:space-y-4">
+                    ${['Email Notifications', 'Download Alerts', 'New File Shared', 'Weekly Summary', 'Storage Warnings'].map((n, i) => `
+                        <div class="flex items-center justify-between">
+                            <p class="text-xs sm:text-sm font-medium text-gray-700">${n}</p>
+                            <input type="checkbox" ${i !== 3 ? 'checked' : ''} class="rounded text-[#006A4E] w-5 h-5 flex-shrink-0">
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            <div class="bg-white rounded-xl border p-4 sm:p-5">
+                <h3 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">🔒 Security</h3>
+                <div class="space-y-3 sm:space-y-4">
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700 mb-1 block">Current Password</label>
+                        <input type="password" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none" placeholder="••••••••">
+                    </div>
+                    <div>
+                        <label class="text-xs sm:text-sm font-medium text-gray-700 mb-1 block">New Password</label>
+                        <input type="password" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none" placeholder="••••••••">
+                    </div>
+                    <button onclick="showToast('Password updated!', 'success')" class="px-4 py-2 btn-primary rounded-lg text-sm font-medium w-full sm:w-auto">Update Password</button>
+                </div>
+            </div>
+            ${currentUser.role === 'admin' ? `
+                <div class="bg-white rounded-xl border p-4 sm:p-5">
+                    <h3 class="font-semibold text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">⚙️ System Settings</h3>
+                    <div class="space-y-3 sm:space-y-4">
+                        <div>
+                            <label class="text-xs sm:text-sm font-medium text-gray-700 mb-1 block">Max Upload Size</label>
+                            <select class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none">
+                                <option>100 MB</option>
+                                <option>250 MB</option>
+                                <option selected>500 MB</option>
+                                <option>1 GB</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <p class="text-xs sm:text-sm font-medium text-gray-700">Allow Public Sharing</p>
+                            <input type="checkbox" checked class="rounded text-[#006A4E] w-5 h-5 flex-shrink-0">
+                        </div>
+                        <button onclick="showToast('Settings saved!', 'success')" class="px-4 py-2 btn-primary rounded-lg text-sm font-medium w-full sm:w-auto">Save Settings</button>
+                    </div>
+                </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+function renderStudentDownloads() {
+    return `
+        <div class="mb-4 sm:mb-6">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800">My Download History</h1>
+            <p class="text-gray-500 text-xs sm:text-sm mt-1">Track all files you've downloaded</p>
+        </div>
+        <div class="bg-white rounded-xl border overflow-hidden">
+            <div class="divide-y divide-gray-100">
+                ${[
+                    { n: 'Course_Syllabus_2026.pdf', i: '📄', by: 'Dr. Ahmad Khan', d: 'Nov 18, 2026 10:32 AM', dev: '💻 Desktop' },
+                    { n: 'Assignment_Guidelines.pdf', i: '📄', by: 'Dr. Sara Malik', d: 'Nov 17, 2026 02:15 PM', dev: '📱 Mobile' },
+                    { n: 'Lab_Manual_v3.pdf', i: '📄', by: 'Prof. Ali Hassan', d: 'Nov 15, 2026 11:45 AM', dev: '💻 Desktop' },
+                    { n: 'Exam_Schedule.pdf', i: '📄', by: 'Admin Office', d: 'Nov 12, 2026 09:20 AM', dev: '💻 Desktop' }
+                ].map(f => `
+                    <div class="p-3 sm:p-4 file-row">
+                        <div class="flex items-start gap-3">
+                            <span class="text-2xl flex-shrink-0">${f.i}</span>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">${f.n}</p>
+                                <p class="text-xs text-gray-500">By ${f.by}</p>
+                                <p class="text-xs text-gray-400 mt-1">${f.d} • ${f.dev}</p>
+                            </div>
+                            <button onclick="downloadFile('${f.n}')" class="px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-xs font-medium flex-shrink-0">⬇️</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function renderNotifications() {
+    return `
+        <div class="mb-4 sm:mb-6">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Notifications</h1>
+            <p class="text-gray-500 text-xs sm:text-sm mt-1">Updates about files shared with you</p>
+        </div>
+        <div class="bg-white rounded-xl border p-3 sm:p-5">
+            <div class="space-y-2 sm:space-y-3">
+                ${[
+                    { icon: '📤', color: 'green', title: 'New file shared with you', msg: 'Dr. Sara Malik shared "Research_Methodology.pdf"', time: '2 hours ago', unread: true },
+                    { icon: '📑', color: 'blue', title: 'Assignment uploaded', msg: 'Dr. Ahmad Khan uploaded "Assignment_Brief_CS301.docx"', time: '1 day ago', unread: true },
+                    { icon: '🔔', color: 'yellow', title: 'Exam schedule updated', msg: 'Admin Office updated "Exam_Schedule.pdf"', time: '3 days ago', unread: false },
+                    { icon: '📊', color: 'purple', title: 'Lab results available', msg: 'Prof. Ali Hassan shared "Lab_Results_Sem5.xlsx"', time: '5 days ago', unread: false }
+                ].map(n => `
+                    <div class="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg ${n.unread ? 'bg-green-50 border border-green-100' : 'bg-gray-50'} transition">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 bg-${n.color}-100 rounded-full flex items-center justify-center text-xs sm:text-sm mt-0.5 flex-shrink-0">${n.icon}</div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs sm:text-sm font-semibold text-gray-800">${n.title}</p>
+                            <p class="text-[10px] sm:text-xs text-gray-600 mt-0.5">${n.msg}</p>
+                            <p class="text-[10px] sm:text-xs text-gray-400 mt-0.5">${n.time}</p>
+                        </div>
+                        ${n.unread ? '<span class="w-2 h-2 bg-[#006A4E] rounded-full mt-2 flex-shrink-0"></span>' : ''}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+// ============ FILE ACTIONS ============
+function downloadFile(name) { showToast(`Downloading "${name}"...`, 'success'); }
+function shareFile(name) { showToast(`Share link copied for "${name}"!`, 'info'); }
+function deleteFile(name) {
+    if (confirm(`Delete "${name}"?`)) { showToast(`"${name}" deleted.`, 'success'); }
+}
+
+function handleFileSelect(event) {
+    const fileList = event.target.files;
+    if (fileList.length > 0) {
+        document.getElementById('uploadQueue').classList.remove('hidden');
+        const container = document.getElementById('uploadItems');
+        container.innerHTML = '';
+        Array.from(fileList).forEach((file, i) => {
+            const item = document.createElement('div');
+            item.className = 'bg-white rounded-xl border p-3 sm:p-4 mb-2';
+            item.innerHTML = `
+                <div class="flex items-center gap-2 sm:gap-3 mb-2">
+                    <span class="text-xl flex-shrink-0">📄</span>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-800 truncate">${file.name}</p>
+                        <p class="text-xs text-gray-500">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                    <span class="text-xs text-green-700 font-medium flex-shrink-0" id="status-${i}">Uploading...</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-[#006A4E] via-[#C9A227] to-[#1E40AF] h-2 rounded-full progress-bar" id="progress-${i}" style="width: 0%"></div>
+                </div>
+            `;
+            container.appendChild(item);
+            setTimeout(() => {
+                document.getElementById(`progress-${i}`).style.width = '100%';
+                setTimeout(() => {
+                    document.getElementById(`status-${i}`).textContent = '✅ Complete';
+                }, 1000);
+            }, i * 500 + 500);
+        });
+        showToast(`${fileList.length} file(s) selected`, 'success');
+    }
+}
+
+// ============ TOAST ============
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+    const colors = { success: '#006A4E', error: '#dc2626', info: '#1E40AF' };
+    toast.style.backgroundColor = colors[type];
+    document.getElementById('toastIcon').textContent = icons[type] || '✅';
+    document.getElementById('toastMessage').textContent = message;
+    toast.classList.remove('translate-y-20', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+    }, 3000);
+}
+
+// ============ CHARTS ============
+function initCharts(tab) {
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { font: { size: window.innerWidth < 640 ? 9 : 11 } } } }
+    };
+    if (tab === 'dashboard') {
+        const dCtx = document.getElementById('downloadsChart');
+        if (dCtx && !dCtx._chartInit) {
+            dCtx._chartInit = true;
+            new Chart(dCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Downloads',
+                        data: [45, 62, 38, 75, 56, 28, 42],
+                        borderColor: '#006A4E',
+                        backgroundColor: 'rgba(0, 106, 78, 0.1)',
+                        fill: true, tension: 0.4, pointBackgroundColor: '#006A4E'
+                    }]
+                },
+                options: { ...commonOptions, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
+        const dpCtx = document.getElementById('departmentChart');
+        if (dpCtx && !dpCtx._chartInit) {
+            dpCtx._chartInit = true;
+            new Chart(dpCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['CS', 'Physics', 'Math', 'Chemistry', 'Biology', 'Admin'],
+                    datasets: [{ data: [65, 42, 38, 35, 28, 39], backgroundColor: ['#006A4E', '#C9A227', '#1E40AF', '#8b5cf6', '#ec4899', '#6b7280'] }]
+                },
+                options: { ...commonOptions, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+    } else if (tab === 'analytics') {
+        const mCtx = document.getElementById('monthlyChart');
+        if (mCtx && !mCtx._chartInit) {
+            mCtx._chartInit = true;
+            new Chart(mCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+                    datasets: [{ label: 'Downloads', data: [320, 450, 280, 520, 680, 750, 832], backgroundColor: 'rgba(30, 64, 175, 0.8)', borderRadius: 6 }]
+                },
+                options: { ...commonOptions, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
+        const fCtx = document.getElementById('fileTypeChart');
+        if (fCtx && !fCtx._chartInit) {
+            fCtx._chartInit = true;
+            new Chart(fCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['PDF', 'DOCX', 'XLSX', 'PPTX', 'Images', 'ZIP'],
+                    datasets: [{ data: [42, 23, 15, 8, 7, 5], backgroundColor: ['#006A4E', '#1E40AF', '#C9A227', '#f59e0b', '#ec4899', '#6b7280'] }]
+                },
+                options: { ...commonOptions, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+    }
+}
+
+// ============ KEYBOARD ============
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !document.getElementById('loginScreen').classList.contains('hidden')) {
+        handleLogin();
+    }
+    if (e.key === 'Escape') {
+        closeMobileSidebar();
+    }
+});
+
+// Handle resize - close mobile sidebar if switching to desktop
+window.addEventListener('resize', () => {
+    if (window.innerWidth >= 1024) {
+        closeMobileSidebar();
+    }
+});
+</script>
+</body>
+</html>
